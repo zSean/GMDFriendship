@@ -6,18 +6,18 @@ public class BlockGenerator : MonoBehaviour {
 
     public GameObject block;
     GameObject blockClone;
-    float blockTimer = 0f;//1.5f;
+    float blockTimer = 1.5f;
     int blockCount = 0;
     float blockOffset;
     float totalDistance;
 
-    List<Block> blockList;  // List<GameObject> blockList;
+    List<Block> blockList;
 
     private void Start()
     {
         totalDistance = Camera.main.orthographicSize * 2 / 6;
         blockOffset = -Camera.main.orthographicSize * 2/3 + (block.GetComponent<SpriteRenderer>().bounds.size.x);
-        blockList = new List<Block>();  // blockList = new List<GameObject>();
+        blockList = new List<Block>();
     }
 
     // Update is called once per frame
@@ -50,7 +50,7 @@ public class BlockGenerator : MonoBehaviour {
             }
 
             // Reset the block generation timer
-            blockTimer = 0f;//1.5f;
+            blockTimer = 1.5f;
             blockCount += 1;
         }
 	}
