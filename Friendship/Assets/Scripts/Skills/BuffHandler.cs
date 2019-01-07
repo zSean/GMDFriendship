@@ -12,6 +12,15 @@ public class BuffHandler : MonoBehaviour {
         statusEffects = new List<StatusEffect>();
     }
 
+    // For any state that the object is in, trigger the buffs that apply
+    public void ActivateBuff(int state, GameObject sender)
+    {
+        for(int i = 0; i < statusEffects.Count; i++)
+        {
+            statusEffects[i].Activate(state, sender);
+        }
+    }
+
     public void AddBuff(StatusEffect buff)
     {
         for (int i = 0; i < statusEffects.Count; i++)
@@ -34,7 +43,6 @@ public class BuffHandler : MonoBehaviour {
     {
         statusEffects.Remove(buff);
     }
-
     public void TransferBuffs(GameObject target)
     {
         for (int i = 0; i < statusEffects.Count; i++)

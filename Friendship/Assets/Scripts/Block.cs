@@ -13,7 +13,6 @@ public class Block : MonoBehaviour {
     public GameObject completeChainSprite;
     GameObject completeChainSpriteClone;
     float destination = 0;
-    GameObject prevBlock = null;
     BlockGenerator parent;
 
     private void Awake()
@@ -50,7 +49,7 @@ public class Block : MonoBehaviour {
         {
             blockType = setType;
             Sprite[] subSprite = Resources.LoadAll<Sprite>("BlockColours");
-            gameObject.GetComponent<SpriteRenderer>().sprite = subSprite[blockType];//Resources.Load("BlockColours", typeof(Sprite)) as Sprite;
+            gameObject.GetComponent<SpriteRenderer>().sprite = subSprite[blockType];
         }
     }
 
@@ -64,13 +63,11 @@ public class Block : MonoBehaviour {
         ActivateBlock();
     }
 
-    // Activate block. Move backwards if prevBlock exists only. Not nextBlock
+    // Activate block. BlockGenerator will handle all the details
     public void ActivateBlock()
     {
-        if (prevBlock != null)
-            prevBlock.GetComponent<Block>().ActivateBlock();
-        else if (parent != null)
-            parent.GetComponent<BlockGenerator>().ActivateSkill(gameObject/*blockType, chainNumber*/);
+        if (parent != null)
+            parent.GetComponent<BlockGenerator>().ActivateSkill(gameObject);
     }
 
     public void SetCompleteChain(bool isMatch)
@@ -95,16 +92,6 @@ public class Block : MonoBehaviour {
     public void SetDestination(float distance)
     {
         destination += distance;
-    }
-
-    public GameObject GetPrevBlock()
-    {
-        return prevBlock;
-    }
-
-    public void SetPrevBlock(GameObject pBlock)
-    {
-        prevBlock = pBlock;
     }
 
     public int GetChainNumber()

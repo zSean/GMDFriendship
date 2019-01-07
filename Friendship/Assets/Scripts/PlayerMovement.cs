@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Set collider to the character's feet only
 public class PlayerMovement : MonoBehaviour {
 
     float hSpeed = 15f;  // Horizontal movement speed
@@ -10,7 +11,7 @@ public class PlayerMovement : MonoBehaviour {
     int maxJumps = 1;   // How many jumps the player may make
     int jumpsRemaining = 0; // How many jumps the player has left
     bool jumpHeld = false;  // Whether the player is holding down the jump button or has released it
-    float jumpSpeed = 10;   // Vertical speed of jumps
+    float jumpSpeed = 7.5f;   // Vertical speed of jumps
     float jumpDuration = 0.2f;  // How long the player can hold a jump for
     float currentJumpDuration = 0f; // How long the player has held the jump for
 
@@ -54,8 +55,13 @@ public class PlayerMovement : MonoBehaviour {
         {
             onGround = 0;
             jumpsRemaining = maxJumps;
-            currentJumpDuration = jumpDuration;
         }
+    }
+
+    public void ResetJumps()
+    {
+        currentJumpDuration = jumpDuration;
+        jumpsRemaining = maxJumps;
     }
 
     // Getters and Setters

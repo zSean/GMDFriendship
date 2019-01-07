@@ -28,8 +28,7 @@ public class SkillFireball : ActiveSkills {
             fireballClone.AddComponent<BuffHandler>();
             gameObject.GetComponent<BuffHandler>().TransferBuffs(fireballClone);
 
-            // Had to replace AddRelativeForce with AddForce due to problems with Quaternion.rotation on instantiation
-            fireballClone.GetComponent<Fireball>().SetPower(power * gameObject.GetComponent<CharacterStats>().GetCurrentStat(0));
+            fireballClone.GetComponent<Projectile>().SetPower(power * parent.GetComponent<CharacterStats>().GetCurrentStat(0));
         }
     }
 

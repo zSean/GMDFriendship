@@ -8,6 +8,7 @@ public class PlayableChar : CharacterStats {
     PlayerMovement control;
 
     int playerState = 0;    // Active, inactive etc...
+
     // Aerial, Flurry, Buff, Perk
     Skills[] skillEquip = new Skills[4];
     // 1 auto, 2 actives
@@ -16,29 +17,62 @@ public class PlayableChar : CharacterStats {
     BuffHandler buffHandler;
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
         control = gameObject.AddComponent<PlayerMovement>();
         buffHandler = gameObject.AddComponent<BuffHandler>();
-
-        activeSkillEquip[0] = gameObject.AddComponent<SkillFireball>();
- 
-        currentCharStats = new float[maxCharStats.Length];
-
-        for (int i = 0; i < maxCharStats.Length; i++)
-        {
-            currentCharStats[i] = maxCharStats[i];
-        }
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-            activeSkillEquip[0].Activate();
+        playerState = GetPlayerState();
+        switch(playerState)
+        {
+            case 0:
+                if (Input.GetKeyDown(KeyCode.Space))
+                    activeSkillEquip[0].Activate();
+                break;
+            case 1:
+                control.ResetJumps();
+                control.enabled = false;
+                gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+                gameObject.GetComponent<CircleCollider2D>().enabled = false;
+                playerState = 2;
+                break;
+            case 2:
+                break;
+            case 3:
+                gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+                gameObject.GetComponent<CircleCollider2D>().enabled = true;
+                control.enabled = true;
+                playerState = 0;
+                break;
+        }
+    }
+    public void SetPlayerState(int state)
+    {
+        playerState = state;
+    }
+    public int GetPlayerState()
+    {
+        return playerState;
     }
 
     public void EquipActiveSkill(int skillIndex, ActiveSkills skill)
     {
-        activeSkillEquip[skillIndex].DestroySkill();
+        if(activeSkillEquip[skillIndex] != null)
+            activeSkillEquip[skillIndex].DestroySkill();
         activeSkillEquip[skillIndex] = skill;
+        activeSkillEquip[skillIndex].SetParent(gameObject);
+    }
+
+    public void EquipBlockSkill(int skillIndex, Skills skill)
+    {
+        skillEquip[skillIndex] = skill;
+        skillEquip[skillIndex].SetParent(gameObject);
+    }
+    public Skills GetBlockSkill(int skillIndex)
+    {
+        return skillEquip[skillIndex];
     }
 }

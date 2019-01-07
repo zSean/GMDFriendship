@@ -55,13 +55,15 @@ public class MenuButton : MonoBehaviour, IPointerClickHandler {
 
     private void OnDisable()
     {
-        gameObject.GetComponent<Button>().enabled = false;
+        if(gameObject.GetComponent<Button>() != null)
+            gameObject.GetComponent<Button>().enabled = false;
         gameObject.GetComponentInChildren<Text>().enabled = false;
     }
 
     private void OnEnable()
     {
-        gameObject.GetComponent<Button>().enabled = true;
+        if(gameObject.GetComponent<Button>() != null)
+            gameObject.GetComponent<Button>().enabled = true;
         text.GetComponent<Text>().enabled = true;
     }
 }

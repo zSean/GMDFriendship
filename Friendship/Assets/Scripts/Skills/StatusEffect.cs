@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 // Taken from previous project. Own work
 public abstract class StatusEffect : MonoBehaviour {
 
@@ -10,6 +11,8 @@ public abstract class StatusEffect : MonoBehaviour {
     protected bool dispellable = true; // If the effect can be dispelled or not in-game.
     protected bool buff = true; // Whether buff or debuff
     protected bool stackable = false;   // If this buff is stackable
+
+    protected int procType = (int)CharacterStates.none;
 
     protected string buffName;  // Name of the buff.
 
@@ -50,7 +53,7 @@ public abstract class StatusEffect : MonoBehaviour {
     }
 
     public abstract void Init();    //Initializing the buff
-    public abstract void Activate();    // Buff effect.
+    public abstract void Activate(int characterState, GameObject sender);    // Buff effect.
     public abstract void Stack(StatusEffect sameEffect);   // What happens when another buff of the same type is applied.
     public abstract void TransferBuff(GameObject target);   // Typically applies to projectiles and attacks
     public abstract string buffDescription();   // String description of the buff.

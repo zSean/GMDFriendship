@@ -53,6 +53,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy: {fileID: 1500853322656738, guid: c411228a6f1a13940a8df452af2a9a2b, type: 2}
+  platform: {fileID: 1463159437109810, guid: fbb3b228f6c93094abbf5824da0e3cba, type: 2}
 --- !u!212 &212708423777035852
 SpriteRenderer:
   m_ObjectHideFlags: 1
