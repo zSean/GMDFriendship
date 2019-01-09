@@ -5,8 +5,11 @@ using UnityEngine;
 // WIP. 15% heal
 public class SkillHeal : Skills {
 
+    LevelGenerator reference;
+
     public override void Activate()
     {
+        reference.GetPlayerPosition(1).gameObject.GetComponent<CharacterStats>().Attacked(-Mathf.CeilToInt(parent.GetComponent<CharacterStats>().GetMaxStat(1) * 0.15f));
         return;
     }
 
@@ -23,6 +26,7 @@ public class SkillHeal : Skills {
     // Use this for initialization
     void Start()
     {
+        reference = GameObject.FindGameObjectWithTag("LevelHandler").GetComponent<LevelGenerator>();
         power = 15f;
         manaCost = 5;
     }

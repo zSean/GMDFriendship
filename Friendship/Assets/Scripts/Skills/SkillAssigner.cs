@@ -2,7 +2,7 @@
 
 public static class SkillAssigner{
 
-    public enum SkillNames { FIREBALL, JUDGEMENT, PURGE, HEAL, HRAESBEAT, KNIFETHROW, REALLOCATE };
+    public enum SkillNames { FIREBALL, JUDGEMENT, PURGE, HEAL, ACTIVEHEALING, HRAESBEAT, KNIFETHROW, REALLOCATE, TELEPORT, AGILITY };
 
     public static Skills AssignSkill(GameObject parent, SkillNames skill)
     {
@@ -20,6 +20,10 @@ public static class SkillAssigner{
                 return parent.AddComponent<SkillKnifeThrow>();
             case SkillNames.REALLOCATE:
                 return parent.AddComponent<SkillReallocate>();
+            case SkillNames.ACTIVEHEALING:
+                return parent.AddComponent<SkillActiveHealing>();
+            case SkillNames.AGILITY:
+                return parent.AddComponent<SkillAgility>();
             default:
                 return null;
         }
@@ -31,6 +35,8 @@ public static class SkillAssigner{
         {
             case SkillNames.FIREBALL:
                 return parent.AddComponent<SkillFireball>();
+            case SkillNames.TELEPORT:
+                return parent.AddComponent<SkillTeleport>();
             default:
                 return null;
         }

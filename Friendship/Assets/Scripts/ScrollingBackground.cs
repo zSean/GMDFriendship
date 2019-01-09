@@ -13,8 +13,8 @@ public class ScrollingBackground : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Vector2 offset = new Vector2(Time.time * scrollSpeed, 0f);
+        Vector2 offset = new Vector2(Time.deltaTime * scrollSpeed * StandardLevel.speedModifier, 0f);
 
-        gameObject.GetComponent<Renderer>().material.mainTextureOffset = offset;
+        gameObject.GetComponent<Renderer>().material.mainTextureOffset += offset;
 	}
 }

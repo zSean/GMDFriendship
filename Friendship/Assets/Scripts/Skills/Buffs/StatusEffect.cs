@@ -16,8 +16,16 @@ public abstract class StatusEffect : MonoBehaviour {
 
     protected string buffName;  // Name of the buff.
 
-    protected Skills parentSkill = null;   // The skill that assigned this buff. Can also be assigned null.
+    protected GameObject parent = null;   // The object that assigned this buff. Can also be assigned null.
 
+    public void SetParent(GameObject parent)
+    {
+        this.parent = parent;
+    }
+    public GameObject GetParent()
+    {
+        return parent;
+    }
     public float GetBuffTimer()
     {
         return buffTimer;

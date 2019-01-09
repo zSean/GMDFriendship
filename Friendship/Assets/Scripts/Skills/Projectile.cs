@@ -20,6 +20,15 @@ public class Projectile : MonoBehaviour {
     // Dodge calculation, Defend calculation, Piercing, respectively
     protected bool[] actions = { true, true, true };
 
+
+    public void SetParent(GameObject parent)
+    {
+        this.parent = parent;
+    }
+    public GameObject GetParent()
+    {
+        return parent;
+    }
     public void SetTargetEnemy(string[] targetTags)
     {
         targets = targetTags;

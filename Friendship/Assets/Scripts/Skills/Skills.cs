@@ -34,6 +34,11 @@ public abstract class Skills : MonoBehaviour
     {
         return manaCost;
     }
+
+    public virtual void Init()
+    {
+        return;
+    }
     //All inherited classes will need to define what their activated effect is.
     public abstract void Activate();
     //All inherited classes will need to write their own skill description.

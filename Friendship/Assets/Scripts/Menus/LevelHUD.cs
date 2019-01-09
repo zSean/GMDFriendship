@@ -31,6 +31,7 @@ public class LevelHUD : MonoBehaviour {
 
     Image pointsImage;  // Displays image box containing points, beside pause button on top right
     Text points;    // Displays points
+    int score = 0;
 
     Image chargeImage;  // Displays the charge gauge
     Text chargeGaugeText;   // Displays the % of charge
@@ -130,8 +131,9 @@ public class LevelHUD : MonoBehaviour {
         points = pointsTextObject.AddComponent<Text>();
         points.font = font;
         points.fontSize = 10;
-        points.text = "1337";
+        points.text = "Pts: 0";
         points.rectTransform.sizeDelta = pointsImage.rectTransform.sizeDelta;
+        points.alignment = TextAnchor.MiddleCenter;
         pointsTextObject.transform.position = pointsObject.transform.position;
         pointsTextObject.transform.SetParent(pointsObject.transform);
 
@@ -159,4 +161,10 @@ public class LevelHUD : MonoBehaviour {
         manaGaugeAnchor.transform.localScale = new Vector3((float)parent.GetMana() / parent.GetMaxMana(), 1f);
         //manaGauge.rectTransform.sizeDelta = new Vector2(manaGaugeStandardSize * parent.GetMana() / parent.GetMaxMana(), manaGauge.rectTransform.sizeDelta.y);
 	}
+
+    public void AddPoints(int add)
+    {
+        score += add;
+        points.text = "Pts: " + score.ToString();
+    }
 }

@@ -34,7 +34,12 @@ public static class DamageCalculations
                 }
             }
             if (calculateModule[1])
+            {
                 target.GetComponent<CharacterStats>().Attacked((int)power);
+
+                if (((target == null) || (target.GetComponent<CharacterStats>().GetCurrentStat(1) <= 0)) && sender.GetComponent<BuffHandler>() != null)
+                    sender.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.kill, sender);
+            }
         }
     }
 }

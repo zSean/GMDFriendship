@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ScrollingObject : MonoBehaviour {
 
-    float lifeTimer = 3f;   // Testing purposes only. Please remove after
+    float lifeTimer = 5f;   // Destroy object after a point. Mostly testing
     bool autoMove = true;
 
     Rigidbody2D rb;

@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour {
     int maxJumps = 1;   // How many jumps the player may make
     int jumpsRemaining = 0; // How many jumps the player has left
     bool jumpHeld = false;  // Whether the player is holding down the jump button or has released it
-    float jumpSpeed = 7.5f;   // Vertical speed of jumps
+    float jumpSpeed = 8f;   // Vertical speed of jumps
     float jumpDuration = 0.2f;  // How long the player can hold a jump for
     float currentJumpDuration = 0f; // How long the player has held the jump for
 
@@ -55,6 +55,7 @@ public class PlayerMovement : MonoBehaviour {
         {
             onGround = 0;
             jumpsRemaining = maxJumps;
+            currentJumpDuration = jumpDuration;
         }
     }
 
@@ -76,6 +77,14 @@ public class PlayerMovement : MonoBehaviour {
     public float GethSpeed()
     {
         return hSpeed;
+    }
+    public void SetJumpDuration(float newJumpDuration)
+    {
+        jumpDuration = newJumpDuration;
+    }
+    public float GetMaxJumpDuration()
+    {
+        return jumpDuration;
     }
     public void SetMaxJumps(int maxNum)
     {

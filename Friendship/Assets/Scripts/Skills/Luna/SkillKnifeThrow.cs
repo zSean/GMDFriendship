@@ -12,8 +12,10 @@ public class SkillKnifeThrow : Skills {
     {
         GameObject knifeObjectClone = Instantiate(knifeObject, new Vector3(Camera.main.transform.position.x - Camera.main.orthographicSize * 2, transform.position.y), transform.rotation);
         knifeProperties = knifeObjectClone.GetComponent<Projectile>();
+        knifeObjectClone.AddComponent<BuffHandler>();
+        gameObject.GetComponent<BuffHandler>().TransferBuffs(knifeObjectClone);
         knifeProperties.SetPower(power);
-        knifeProperties.SetTrajectory(knifeProperties.GetHSpeed(), vSpeed);
+        knifeProperties.SetTrajectory(knifeProperties.GetHSpeed() * 2.5f, vSpeed);
         return;
     }
 
@@ -24,7 +26,7 @@ public class SkillKnifeThrow : Skills {
 
     public override string SkillDescription()
     {
-        return "Knife throw: Sever";
+        return "Knife throw: Lacerate";
     }
 
     // Use this for initialization

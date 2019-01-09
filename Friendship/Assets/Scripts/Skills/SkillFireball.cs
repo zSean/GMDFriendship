@@ -24,6 +24,7 @@ public class SkillFireball : ActiveSkills {
 
             //Create fireball
             fireballClone = Instantiate(fireball, transform.position, transform.rotation);
+            fireballClone.GetComponent<Projectile>().SetParent(gameObject);
 
             fireballClone.AddComponent<BuffHandler>();
             gameObject.GetComponent<BuffHandler>().TransferBuffs(fireballClone);
