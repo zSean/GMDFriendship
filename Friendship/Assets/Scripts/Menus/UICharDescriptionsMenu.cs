@@ -52,4 +52,9 @@ public class UICharDescriptionsMenu : MenuHandler {
     {
         descriptionText.rectTransform.sizeDelta = new Vector2(textWidth, textHeight);
     }
+
+    public override void SwitchChar(int switchChar)
+    {
+        ChangeMenu(switchChar);
+    }
 }

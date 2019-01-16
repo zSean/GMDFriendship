@@ -7,16 +7,14 @@ using UnityEngine.EventSystems;
 public class MenuButton : MonoBehaviour, IPointerClickHandler {
 
     int buttonNum = 0;
-    string buttonName = ""; // To distinguish if there are different types of buttons
     MenuHandler parent;
     GameObject text;
+    bool selected = false;
 
     public void OnPointerClick(PointerEventData eventData)
     {
         if (parent != null)
             parent.ChangeMenu(buttonNum);
-        else
-            Destroy(gameObject);
     }
 
     private void Awake()
@@ -32,7 +30,11 @@ public class MenuButton : MonoBehaviour, IPointerClickHandler {
         this.buttonNum = buttonNum;
         this.parent = parent;
     }
-
+    public void SelectButton(bool selected)
+    {
+        this.selected = selected;
+        return;
+    }
     public int GetButtonNum()
     {
         return buttonNum;
@@ -41,7 +43,7 @@ public class MenuButton : MonoBehaviour, IPointerClickHandler {
     {
         buttonNum = num;
     }
-    public void SetText(string text, Font font, int fSize, TextAnchor alignment)
+    public void SetTextProperties(string text, Font font, int fSize, TextAnchor alignment)
     {
         this.text.GetComponent<Text>().font = font;
         this.text.GetComponent<Text>().text = text;
@@ -51,6 +53,15 @@ public class MenuButton : MonoBehaviour, IPointerClickHandler {
     public void SetTextboxSize(Vector2 size)
     {
         text.GetComponent<Text>().rectTransform.sizeDelta = size;
+    }
+
+    public void SetText(string text)
+    {
+        this.text.GetComponent<Text>().text = text;
+    }
+    public string GetText()
+    {
+        return text.GetComponent<Text>().text;
     }
 
     private void OnDisable()

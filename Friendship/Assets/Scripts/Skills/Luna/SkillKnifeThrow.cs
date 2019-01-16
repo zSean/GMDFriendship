@@ -6,7 +6,6 @@ public class SkillKnifeThrow : Skills {
 
     GameObject knifeObject;
     Projectile knifeProperties;
-    float[] vSpeed = { 0f, 0f, 0f };
 
     public override void Activate()
     {
@@ -15,7 +14,7 @@ public class SkillKnifeThrow : Skills {
         knifeObjectClone.AddComponent<BuffHandler>();
         gameObject.GetComponent<BuffHandler>().TransferBuffs(knifeObjectClone);
         knifeProperties.SetPower(power);
-        knifeProperties.SetTrajectory(knifeProperties.GetHSpeed() * 2.5f, vSpeed);
+        knifeProperties.SetTrajectory(knifeProperties.GetHSpeed() * 2.5f, null);
         return;
     }
 

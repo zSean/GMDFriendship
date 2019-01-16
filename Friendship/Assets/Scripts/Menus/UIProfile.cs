@@ -37,16 +37,20 @@ public class UIProfile : MenuHandler {
     UIStatMenu statMenu;    // UI for stat menu
     UISkillTreeMenu skillTreeMenu;  // UI for skill tree menu
 
+    // For switching characters
+    MenuButton switchCharButton;
+    int switchChar = 0;
+
     // Used to detect mouse events when hovering over the skill icons (tooltip display)
     private EventSystem eventSystem;
     private GraphicRaycaster rayCaster;
 
-    private void Start()
+    public override void Init(MenuHandler parent)
     {
-        Init(null);
+        return;
     }
 
-    public override void Init(MenuHandler parent)
+    public void Init(MenuHandler parent, Dictionary<int, SkillProperties[]> loadSkills, int[] equippedSkillsIndex)
     {
         // Initialize the defaults
         defaultSprite = Resources.Load("ButtonTabs", typeof(Sprite)) as Sprite;
@@ -82,7 +86,7 @@ public class UIProfile : MenuHandler {
             button.AddComponent<Button>();
             profileOptions[i] = button.AddComponent<MenuButton>();
             profileOptions[i].Init(i, this);
-            profileOptions[i].SetText(profileOptionsHeader[i], font, 10, TextAnchor.MiddleCenter);
+            profileOptions[i].SetTextProperties(profileOptionsHeader[i], font, 10, TextAnchor.MiddleCenter);
             button.transform.SetParent(canvas.transform);
             profileOptionsImage[i] = button.AddComponent<Image>();
             profileOptionsImage[i].sprite = defaultSprite;
@@ -112,7 +116,7 @@ public class UIProfile : MenuHandler {
         statMenuObject.transform.SetParent(canvas.transform);
         statMenu = statMenuObject.AddComponent<UIStatMenu>();
         statMenu.Init(this);
-        statMenu.SetStartPoint(new Vector2(descriptionBox.transform.position.x - (descriptionBoxWidth / 2), descriptionBox.transform.position.y + descriptionBoxHeight * 5 / 12), 30f);
+        statMenu.SetStartPoint(new Vector2(descriptionBox.transform.position.x - (descriptionBoxWidth / 3), descriptionBox.transform.position.y + descriptionBoxHeight * 5 / 12), 30f);
         statMenu.ChangeMenu(characterSelect);
         statMenu.Disable(true);
         submenus[1] = statMenu;
@@ -122,11 +126,27 @@ public class UIProfile : MenuHandler {
         skillTreeObject.transform.position = descriptionBox.transform.position;
         skillTreeObject.transform.SetParent(canvas.transform);
         skillTreeMenu = skillTreeObject.AddComponent<UISkillTreeMenu>();
-        skillTreeMenu.Init(this);
+
+
+        // Loading skills to skillTreeMenu
+        skillTreeMenu.Init(this, loadSkills, equippedSkillsIndex);
         skillTreeMenu.SetStartPoint(new Vector2(descriptionBox.transform.position.x - (descriptionBoxWidth / 2), descriptionBox.transform.position.y + descriptionBoxHeight * 5 / 12), 30f);
         skillTreeMenu.ChangeMenu(characterSelect);
         skillTreeMenu.Disable(true);
         submenus[2] = skillTreeMenu;
+
+
+        // Create the switch button to swap between characters
+        GameObject switchCharButtonObject = new GameObject();
+        switchCharButtonObject.transform.SetParent(canvas.transform);
+        switchCharButtonObject.AddComponent<Button>();
+        switchCharButton = switchCharButtonObject.AddComponent<MenuButton>();
+        switchCharButton.Init(99, this);
+        switchCharButton.SetTextProperties("Switch", font, 10, TextAnchor.MiddleCenter);
+        switchCharButtonObject.AddComponent<Image>().sprite = Resources.Load("ButtonTabs", typeof(Sprite)) as Sprite;
+        switchCharButtonObject.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(switchCharButton.GetComponent<Image>().sprite.rect.width, switchCharButton.GetComponent<Image>().sprite.rect.height / 1.5f);
+        switchCharButton.SetTextboxSize(switchCharButtonObject.GetComponent<Image>().rectTransform.sizeDelta);
+        switchCharButton.gameObject.transform.position = switchCharButton.gameObject.transform.position = Vector3.right * 50f + Vector3.up * 20f;
 
         // Create the event system so that the UI can detect if the mouse is hovering over it
         GameObject eventSys = new GameObject();
@@ -137,6 +157,15 @@ public class UIProfile : MenuHandler {
 
     public override void ChangeMenu(int newButton)
     {
+        if(newButton == 99)
+        {
+            if (submenus[selectedButton] != null)
+            {
+                switchChar = (switchChar + 1) % 2;
+                submenus[selectedButton].SwitchChar(switchChar);
+            }
+            return;
+        }
         if (newButton != selectedButton)
         {
             if (submenus[selectedButton] != null)
@@ -150,14 +179,17 @@ public class UIProfile : MenuHandler {
                 case 0:
                     charDescriptions.Disable(false);
                     charDescriptions.ChangeMenu(characterSelect);
+                    charDescriptions.SwitchChar(switchChar);
                     break;
                 case 1:
                     statMenu.Disable(false);
                     statMenu.ChangeMenu(characterSelect);
+                    statMenu.SwitchChar(switchChar);
                     break;
                 case 2:
                     skillTreeMenu.Disable(false);
                     skillTreeMenu.ChangeMenu(characterSelect);
+                    skillTreeMenu.SwitchChar(switchChar);
                     break;
             }
         }

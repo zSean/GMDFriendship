@@ -54,12 +54,15 @@ public class Projectile : MonoBehaviour {
     {
         return numHits;
     }
-    public void SetTrajectory(float speedX, float[] speedY)
+    public void SetTrajectory(float speedX, float[] speedY = null)
     {
         speed = speedX;
-        this.speedY[0] = speedY[0];
-        this.speedY[1] = speedY[1];
-        this.speedY[2] = speedY[2];
+        if (speedY != null)
+        {
+            this.speedY[0] = speedY[0];
+            this.speedY[1] = speedY[1];
+            this.speedY[2] = speedY[2];
+        }
     }
     public float GetHSpeed()
     {

@@ -116,7 +116,6 @@ public class LevelHUD : MonoBehaviour {
         manaBar.sprite = Resources.Load("LevelHUD/ManaBar", typeof(Sprite)) as Sprite;
         manaBar.rectTransform.sizeDelta = manaGauge.rectTransform.sizeDelta;
         manaBarObject.transform.position = manaGaugeObject.transform.position;
-        //manaBarObject.transform.SetParent(manaGaugeObject.transform);
         manaBarObject.transform.SetParent(parentCanv.transform);
 
         // Points
