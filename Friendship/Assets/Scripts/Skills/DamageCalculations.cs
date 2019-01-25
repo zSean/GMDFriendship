@@ -22,7 +22,8 @@ public static class DamageCalculations
                     if (Random.Range(0, 101) < target.GetComponent<CharacterStats>().GetCurrentStat(4))
                     {
                         target.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.dodge, sender);
-                        sender.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.dodged, target);
+                        if(sender.GetComponent<BuffHandler>() != null)
+                            sender.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.dodged, target);
                         return;
                     }
                 }
@@ -30,7 +31,8 @@ public static class DamageCalculations
                 if (calculateModule[1])
                 {
                     target.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.attacked, sender);
-                    sender.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.damaged, target);
+                    if(sender.GetComponent<BuffHandler>() != null)
+                        sender.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.damaged, target);
                 }
             }
             if (calculateModule[1])

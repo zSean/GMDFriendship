@@ -15,7 +15,7 @@ public class LevelGenerator : MonoBehaviour {
 
     // Players
     PlayableChar[] player;
-    int selectedPlayer = 0;
+    int selectedPlayer = 1;
 
     // Level
     float maxSwapCooldown = 10f;    // 10 second cooldown before swapping
@@ -32,7 +32,7 @@ public class LevelGenerator : MonoBehaviour {
     public GameObject platform;
     float spawnTimer = 0f;
     float pSpawnTimer = 0f;
-    float levelDistance = 100f;
+    float levelDistance = 2500f; // On endless, make distance = Mathf.infinity???
     float slowDownRate = StandardLevel.speedModifier / 5;
     bool endGame = false;   // True once distance < 0
     GameObject boss;  // Only works with bossSpawn
@@ -71,9 +71,11 @@ public class LevelGenerator : MonoBehaviour {
         pSpawnTimer = Random.Range(1f, 3f); // Spawn Platforms
 
         StandardLevel.speedModifier = StandardLevel.originalSpeedModifier;
+
+        SwapPlayers(0);
     }
 
-    public void LoadPlayers(SkillAssigner.SkillNames[] playerSkills, Stats[] playerStats)
+    public void LoadPlayers(SkillProperties[] playerSkills, Stats[] playerStats)
     {
         GameObject playerObject = (GameObject)Resources.Load("Player");
         player = new PlayableChar[playerSkills.Length / 7];
@@ -91,10 +93,12 @@ public class LevelGenerator : MonoBehaviour {
             // Equip block skills
             for(int j = i * playerSkills.Length / player.Length; j < playerSkills.Length / (player.Length - i); j++)
             {
-                if(j % 7 < 4)
-                    player[i].EquipBlockSkill(j % 7, SkillAssigner.AssignSkill(playerObjectClone, playerSkills[j]));
+                if (j % 7 < 4)
+                {
+                    player[i].EquipBlockSkill(j % 7, SkillAssigner.AssignSkill(playerObjectClone, playerSkills[j].name));
+                }
                 else
-                    player[i].EquipActiveSkill(j % 7 - 4, SkillAssigner.AssignActiveSkill(playerObjectClone, playerSkills[j]));
+                    player[i].EquipActiveSkill(j % 7 - 4, SkillAssigner.AssignActiveSkill(playerObjectClone, playerSkills[j].name));
             }
         }
 
@@ -174,6 +178,7 @@ public class LevelGenerator : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Q))
             SwapPlayers((selectedPlayer + 1) % 2);
 
+        // If not reached the end of the level yet, keep spawning enemies and platforms
         if (levelDistance > 0)
         {
             // Level and platform generation
@@ -197,7 +202,7 @@ public class LevelGenerator : MonoBehaviour {
                         Destroy(newEnemy);
                         break;
                 }
-                //Instantiate(enemy, transform.position, transform.rotation);
+
                 spawnTimer = 2f;
             }
             if (pSpawnTimer <= 0)
@@ -211,7 +216,7 @@ public class LevelGenerator : MonoBehaviour {
     public void SwapPlayers(int select)
     {
         // If the player to be swapped has hp > 0 and is on standby
-        if ((select != selectedPlayer) && (swapCooldown <= 0) && (player[select].GetCurrentStat(1) > 0) && (player[select].GetPlayerState() == 2))
+        if ((swapCooldown <= 0) && (player[select].GetCurrentStat(1) > 0) && (player[select].GetPlayerState() == 2))
         {
             swapCooldown = maxSwapCooldown;
             player[selectedPlayer].SetPlayerState(1);

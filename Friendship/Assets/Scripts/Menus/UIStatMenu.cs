@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class UIStatMenu : MenuHandler {
 
     MenuButton[] statButtons;   // These are just the buttons. Will need something to store the actual stats
-    int numStats = 7;   // 5,6 = Frea; 7,8 = Luna
+    int numStats = 5;   // 5,6 = Frea; 7,8 = Luna
     int specialStats = 2;
     int numCharacters = 2;
     int characterSelect = 0;
@@ -25,7 +25,7 @@ public class UIStatMenu : MenuHandler {
             stats.AddComponent<Button>();
             statButtons[i] = stats.AddComponent<MenuButton>();
             statButtons[i].Init(i, this);
-            statButtons[i].SetText(statText[i], font, 10, TextAnchor.MiddleLeft);
+            statButtons[i].SetTextProperties(statText[i], font, 10, TextAnchor.MiddleLeft);
             statButtons[i].SetTextboxSize(new Vector2(100f, 50f));   // Placeholder value
         }
         return;
@@ -39,7 +39,7 @@ public class UIStatMenu : MenuHandler {
         // Print out stats for the selected character
         for (int i = 0; i < numStats; i++)
         {
-            statButtons[i].SetText(statText[i + Mathf.Max(0, ((i - numStats - specialStats * (characterSelect + 1))))], font, 10, TextAnchor.MiddleLeft);
+            statButtons[i].SetTextProperties(statText[i] /*+ Mathf.Max(0, ((i - numStats - specialStats * (characterSelect + 1))))]*/, font, 10, TextAnchor.MiddleLeft);
         }
         return;
     }
@@ -59,5 +59,10 @@ public class UIStatMenu : MenuHandler {
         {
             statButtons[i].gameObject.transform.position = start - new Vector2(0f, offset) * i;
         }
+    }
+
+    public override void SwitchChar(int switchChar)
+    {
+        ChangeMenu(switchChar);
     }
 }

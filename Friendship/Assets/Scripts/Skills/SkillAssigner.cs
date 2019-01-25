@@ -2,7 +2,12 @@
 
 public static class SkillAssigner{
 
-    public enum SkillNames { FIREBALL, JUDGEMENT, PURGE, HEAL, ACTIVEHEALING, HRAESBEAT, KNIFETHROW, REALLOCATE, TELEPORT, AGILITY };
+    public enum SkillNames
+    {
+        JUDGEMENT, PURGE, HEAL, ACTIVEHEALING, BOLT, FREASTORM, GUARDIAN, ICESPEAR, ETERNALFLAME, SPIRITFOX, PURITY, WARMTH,
+        HRAESBEAT, KNIFETHROW, REALLOCATE, AGILITY, FALLENWINGS, FEATHERDANCE, FEATHERSHIELD, NIGHTMARE, RAPIDRELOAD, ROOST, SALVO, WINGBOMB,
+        FIREBALL, ELEGANCE, SHOOT, TELEPORT, SIXTHSENSE, BOMBTOSS
+    };
 
     public static Skills AssignSkill(GameObject parent, SkillNames skill)
     {
@@ -24,6 +29,8 @@ public static class SkillAssigner{
                 return parent.AddComponent<SkillActiveHealing>();
             case SkillNames.AGILITY:
                 return parent.AddComponent<SkillAgility>();
+            case SkillNames.FREASTORM:
+                return parent.AddComponent<SkillFreaStorm>();
             default:
                 return null;
         }
