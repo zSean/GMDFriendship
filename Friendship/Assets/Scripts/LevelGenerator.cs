@@ -38,6 +38,9 @@ public class LevelGenerator : MonoBehaviour {
     GameObject boss;  // Only works with bossSpawn
     BossSpawn bossSpawner = null; // Set up a boss
 
+    // Filter
+    ScreenFilter filter;
+
     // Tracking enemies and player
     public enum EnemyNames { GOBLIN, GARGOYLE };
     List<EnemyNames> levelEnemyTypes = new List<EnemyNames>();  // For loading particular enemies onto the level
@@ -66,6 +69,9 @@ public class LevelGenerator : MonoBehaviour {
         levelHUD.SetLevelGenerator(this);
 
         manaRegenTimer = maxManaRegenTimer;
+
+        GameObject filterObject = (GameObject)Resources.Load("FilterObject");
+        filter = filterObject.GetComponent<ScreenFilter>();
 
         // Testing
         pSpawnTimer = Random.Range(1f, 3f); // Spawn Platforms
@@ -236,6 +242,16 @@ public class LevelGenerator : MonoBehaviour {
         }
     }
 
+    public ScreenFilter GetFilter()
+    {
+        return filter;
+    }
+
+    public int GetCurrentPlayerIndex()
+    {
+        return selectedPlayer;
+    }
+
     // Need transform component
     public Transform[] GetEnemyPositions()
     {
@@ -245,6 +261,14 @@ public class LevelGenerator : MonoBehaviour {
     public Transform GetPlayerPosition(int selectedPlayer)
     {
         return player[selectedPlayer].gameObject.transform;
+    }
+    public GameObject GetCurrentPlayerObject()
+    {
+        return player[selectedPlayer].gameObject;
+    }
+    public BlockGenerator GetGenerator()
+    {
+        return blockGenerator;
     }
 
     public void AddPoints(int add)

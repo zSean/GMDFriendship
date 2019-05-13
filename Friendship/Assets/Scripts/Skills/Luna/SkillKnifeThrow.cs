@@ -14,7 +14,7 @@ public class SkillKnifeThrow : Skills {
         knifeObjectClone.AddComponent<BuffHandler>();
         gameObject.GetComponent<BuffHandler>().TransferBuffs(knifeObjectClone);
         knifeProperties.SetPower(power);
-        knifeProperties.SetTrajectory(knifeProperties.GetHSpeed() * 2.5f, null);
+        knifeProperties.SetTrajectory(knifeProperties.GetHSpeed() * 2.5f);
         return;
     }
 

@@ -2,27 +2,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+// Mod
 public struct SkillProperties
 {
     public SkillAssigner.SkillNames name;
-    public int level;
-    public int variant;
+    public int[] level; // Levels of all the variants
+    public int variant; // 0 = Original, 1 = Variant 1, 2 = Variant 2
+    public int buttonNumber;    // Button number used for UISkillTreeMenu
+    public string skillImagePath;   // Used for BlockGenerator and SkillUI -> (Resources.Load(skillImage))
+
+    public SkillProperties(SkillAssigner.SkillNames name, int buttonNumber, int[] level = null, string skillImagePath = "BlockColours", int variant = 0)
+    {
+        this.name = name;
+        this.level = new int[level.Length];
+        level.CopyTo(this.level, 0);
+        this.variant = variant;
+        this.buttonNumber = buttonNumber;
+
+        if (skillImagePath != "BlockColours")
+            skillImagePath = "CharacterSprites/Skills/SkillIcons/" + skillImagePath;
+        this.skillImagePath = skillImagePath;
+    }
 }
 
 // Handles general flow of game, contains important stats
-public class GameHandler : MonoBehaviour {
+public class GameHandler : MonoBehaviour
+{
 
     // Something to handle cutscenes
 
     // Character stats
     Stats[] charStats; // Record of chracters' stats. Does not include special stats
 
-    // REVISIT
-    static Dictionary<int, SkillProperties[]> skillGroup = new Dictionary<int, SkillProperties[]>(); // Dictionary containing category that each skillName belongs to
-    SkillProperties[] equippedSkills;  // Contains the equipped skills struct
-    int[] equippedSkillsIndex;  // Contains the index for the equipped skills
-
+    Dictionary<int, SkillProperties[]> skillsList = new Dictionary<int, SkillProperties[]>();   // key int = group (aerial, flurry, buff etc), value SkillProperties = skills
+    Dictionary<SkillAssigner.SkillNames, SkillProperties> skillsIndex = new Dictionary<SkillAssigner.SkillNames, SkillProperties>();    // For assigning equipped skills
+    SkillProperties[] equippedSkills;  // Contains the equippped skills by name only
+    List<int> equippedLevelVariants;
 
     // float[,] specialStats;
 
@@ -36,182 +51,168 @@ public class GameHandler : MonoBehaviour {
     UIProfile ui;
 
     // Game state
-    int gameState = 1;
+    int gameState = 0;
 
-
-
-    private void GenerateSkillGroupDictionary()
+    private List<SkillProperties> GroupSkills(List<SkillProperties> newSkills, List<SkillAssigner.SkillNames> skillNames, int[] variants, List<string> path)
     {
-        // Assigning skill stats and further grouping of skills into categories (Aerial, flurry, buff, perk, attack)
-
-        // Create a list of skill names only first and create SkillProperties for each element in the list
-        List<SkillAssigner.SkillNames[]> tempSkillGroups = new List<SkillAssigner.SkillNames[]>();
-
-        // Aerial
-        List<SkillAssigner.SkillNames> addNames = new List<SkillAssigner.SkillNames> {
-            SkillAssigner.SkillNames.JUDGEMENT, SkillAssigner.SkillNames.BOLT, SkillAssigner.SkillNames.ICESPEAR, SkillAssigner.SkillNames.HRAESBEAT, SkillAssigner.SkillNames.WINGBOMB, SkillAssigner.SkillNames.NIGHTMARE };
-        tempSkillGroups.Add(addNames.ToArray());
-        addNames.Clear();
-
-        // Flurry
-        addNames.Add(SkillAssigner.SkillNames.PURGE);
-        addNames.Add(SkillAssigner.SkillNames.ETERNALFLAME);
-        addNames.Add(SkillAssigner.SkillNames.FREASTORM);
-        addNames.Add(SkillAssigner.SkillNames.FEATHERDANCE);
-        addNames.Add(SkillAssigner.SkillNames.KNIFETHROW);
-        addNames.Add(SkillAssigner.SkillNames.SALVO);
-        tempSkillGroups.Add(addNames.ToArray());
-        addNames.Clear();
-
-        // Buff
-        addNames.Add(SkillAssigner.SkillNames.HEAL);
-        addNames.Add(SkillAssigner.SkillNames.WARMTH);
-        addNames.Add(SkillAssigner.SkillNames.SPIRITFOX);
-        addNames.Add(SkillAssigner.SkillNames.REALLOCATE);
-        addNames.Add(SkillAssigner.SkillNames.FEATHERSHIELD);
-        addNames.Add(SkillAssigner.SkillNames.FALLENWINGS);
-        tempSkillGroups.Add(addNames.ToArray());
-        addNames.Clear();
-
-        // Perk
-        addNames.Add(SkillAssigner.SkillNames.ACTIVEHEALING);
-        addNames.Add(SkillAssigner.SkillNames.GUARDIAN);
-        addNames.Add(SkillAssigner.SkillNames.PURITY);
-        addNames.Add(SkillAssigner.SkillNames.RAPIDRELOAD);
-        addNames.Add(SkillAssigner.SkillNames.AGILITY);
-        addNames.Add(SkillAssigner.SkillNames.ROOST);
-        tempSkillGroups.Add(addNames.ToArray());
-        addNames.Clear();
-
-        // Active skills
-        addNames.Add(SkillAssigner.SkillNames.FIREBALL);
-        addNames.Add(SkillAssigner.SkillNames.ELEGANCE);
-        addNames.Add(SkillAssigner.SkillNames.SHOOT);
-        addNames.Add(SkillAssigner.SkillNames.TELEPORT);
-        addNames.Add(SkillAssigner.SkillNames.SIXTHSENSE);
-        addNames.Add(SkillAssigner.SkillNames.BOMBTOSS);
-        tempSkillGroups.Add(addNames.ToArray());
-        addNames.Clear();
-
-        // Actual skill assignment and building of the dictionary
-        for (int i = 0; i < tempSkillGroups.Count; i++)
+        string tempPath = "";
+        for (int i = 0; i < skillNames.Count; i++)
         {
-            /*
-             * 
-             * 
-             * 
-             * 
-             *  TEMP ASSIGNMENT. Once saving and loading is up, will need to change this section
-             *  
-             *  
-             *  
-             *  
-             *  */
-            int defaultLevel = 1;
-
-            List<SkillProperties> addSkillProperties = new List<SkillProperties>();
-            for (int j = 0; j < tempSkillGroups[i].Length; j++)
-            {
-                SkillProperties newSkill = new SkillProperties
-                {
-                    name = tempSkillGroups[i][j],
-                    variant = 0,
-                    level = defaultLevel
-                };
-
-                addSkillProperties.Add(newSkill);
-                // The bit with hardcoding. All skill groups except perks (**ASSUMED TO BE j = 3**) will have 2 variants
-                if (i != 3)
-                {
-                    for(int k = 1; k < 3; k++)
-                    {
-                        SkillProperties newVariant = new SkillProperties();
-                        newVariant.name = tempSkillGroups[i][j];
-                        newVariant.variant = k;
-                        newVariant.level = -3; //defaultLevel;
-                        addSkillProperties.Add(newVariant);
-                    }
-                }
-            }
-            skillGroup[i] = addSkillProperties.ToArray();
-            addSkillProperties.Clear();
+            if (i < path.Count)
+                tempPath = path[i];
+            else
+                tempPath = null;
+            SkillProperties newSkill = new SkillProperties(skillNames[i], i, variants, tempPath);
+            newSkills.Add(newSkill);    // Add new skill to the groups (aerial, flurry, buff etc)
+            skillsIndex[skillNames[i]] = newSkill; // Also add that skill to a dictionary so it can be looked up easily when loading skills
         }
-        return;
+        return newSkills;
     }
 
-    // Testing
-    private SkillProperties FindEquippedSkill(int index, SkillAssigner.SkillNames findName)
+    private Dictionary<int, SkillProperties[]> GenerateSkillGroupDictionary()
     {
-        for(int i = 0; i < skillGroup[index].Length; i++)
-        {
-            if (skillGroup[index][i].name == findName)
-                return skillGroup[index][i];
-        }
+        // Grouping of skills into categories (Aerial, flurry, buff, perk, attack). Tuple could be used for newSkills and pathNames, or move to external file
+        List<SkillProperties> newSkills = new List<SkillProperties>();  // Temporary holder for skills in each group
+        // Temporary holder for string paths of each skill (for loading sprite images).
+        List<string> pathNames = new List<string> { "PillarofFireIcon", "BoltIcon", "IceSpearsIcon", "HraesBeatIcon", "WingBombIcon", "NightmareIcon" };
 
-        return new SkillProperties();
+
+        int[] skillVariant = { 1, -3, -3 };  // Variants for all skills except perks
+        int[] skillVariant2 = { 1 };    // Perks do not have variants
+
+        // Aerial
+        List<SkillAssigner.SkillNames> addSkillGroups = new List<SkillAssigner.SkillNames> {
+            SkillAssigner.SkillNames.JUDGEMENT, SkillAssigner.SkillNames.BOLT, SkillAssigner.SkillNames.ICESPEAR, SkillAssigner.SkillNames.HRAESBEAT, SkillAssigner.SkillNames.WINGBOMB, SkillAssigner.SkillNames.NIGHTMARE };
+
+        skillsList[0] = GroupSkills(newSkills, addSkillGroups, skillVariant, pathNames).ToArray();
+        addSkillGroups.Clear();
+        newSkills.Clear();
+        pathNames.Clear();
+
+        // Flurry
+        addSkillGroups.Add(SkillAssigner.SkillNames.PURGE);
+        addSkillGroups.Add(SkillAssigner.SkillNames.ETERNALFLAME);
+        addSkillGroups.Add(SkillAssigner.SkillNames.FREASTORM);
+        addSkillGroups.Add(SkillAssigner.SkillNames.FEATHERDANCE);
+        addSkillGroups.Add(SkillAssigner.SkillNames.SALVO);
+        addSkillGroups.Add(SkillAssigner.SkillNames.KNIFETHROW);
+        // Flurry, pathnames
+        pathNames.Add("IgnitionIcon");
+        pathNames.Add("LastingFireIcon");
+        pathNames.Add("FreaStormIcon");
+        pathNames.Add("FeatherDanceIcon");
+        pathNames.Add("SalvoIcon");
+        pathNames.Add("KnifeTossIcon");
+
+        skillsList[1] = GroupSkills(newSkills, addSkillGroups, skillVariant, pathNames).ToArray();
+        addSkillGroups.Clear();
+        newSkills.Clear();
+        pathNames.Clear();
+
+        // Buff
+        addSkillGroups.Add(SkillAssigner.SkillNames.HEAL);
+        addSkillGroups.Add(SkillAssigner.SkillNames.WARMTH);
+        addSkillGroups.Add(SkillAssigner.SkillNames.SPIRITFOX);
+        addSkillGroups.Add(SkillAssigner.SkillNames.REALLOCATE);
+        addSkillGroups.Add(SkillAssigner.SkillNames.FEATHERSHIELD);
+        addSkillGroups.Add(SkillAssigner.SkillNames.FALLENWINGS);
+        // Buff, pathnames
+        pathNames.Add("RestorationIcon");
+        pathNames.Add("WarmthIcon");
+        pathNames.Add("SpiritFoxIcon");
+        pathNames.Add("ReallocateIcon");
+        pathNames.Add("FeatherShieldIcon");
+        pathNames.Add("FallenWingsIcon");
+
+        skillsList[2] = GroupSkills(newSkills, addSkillGroups, skillVariant, pathNames).ToArray();
+        addSkillGroups.Clear();
+        newSkills.Clear();
+        pathNames.Clear();
+
+        // Perk
+        addSkillGroups.Add(SkillAssigner.SkillNames.ACTIVEHEALING);
+        addSkillGroups.Add(SkillAssigner.SkillNames.GUARDIAN);
+        addSkillGroups.Add(SkillAssigner.SkillNames.PURITY);
+        addSkillGroups.Add(SkillAssigner.SkillNames.RAPIDRELOAD);
+        addSkillGroups.Add(SkillAssigner.SkillNames.AGILITY);
+        addSkillGroups.Add(SkillAssigner.SkillNames.ROOST);
+        // Perk, pathnames
+        pathNames.Add("ActiveHealingIcon");
+        pathNames.Add("GuardianIcon");
+        pathNames.Add("Purity");
+        pathNames.Add("RapidReloadIcon");
+        pathNames.Add("AgilityIcon");
+        pathNames.Add("RoostIcon");
+
+        skillsList[3] = GroupSkills(newSkills, addSkillGroups, skillVariant2, pathNames).ToArray();
+        addSkillGroups.Clear();
+        newSkills.Clear();
+        pathNames.Clear();
+
+        // Active Skills
+        addSkillGroups.Add(SkillAssigner.SkillNames.FIREBALL);
+        addSkillGroups.Add(SkillAssigner.SkillNames.TELEPORT);
+        
+        // Path elements = 0
+
+        skillsList[4] = GroupSkills(newSkills, addSkillGroups, skillVariant2, pathNames).ToArray();
+        addSkillGroups.Clear();
+        newSkills.Clear();
+        pathNames.Clear();
+
+        return skillsList;
     }
 
     // Use this for initialization
-	void Start () {
+    void Start()
+    {
 
         // Init character stats here
         charStats = new Stats[2];
-        for(int i = 0; i < 2; i++)
+        for (int i = 0; i < 2; i++)
         {
-            float[] defaultStats = {5, 1000, 0, 0, 0, 1, 1 };//float[] defaultStats = { 1, 1, 0, 0, 0, 1, 1 };
+            float[] defaultStats = { 5, 1000, 0, 0, 0, 1, 1 };//float[] defaultStats = { 1, 1, 0, 0, 0, 1, 1 };
             charStats[i].maxCharStats = defaultStats;
         }
 
-        GenerateSkillGroupDictionary();
+        skillsList = GenerateSkillGroupDictionary();
+        equippedLevelVariants = new List<int>();
 
-        equippedSkills = new SkillProperties[14];
-        equippedSkillsIndex = new int[14];
+        // Revisit this section later
+        equippedSkills = new SkillProperties[14];  // 3 block skills, 1 perk, 1 auto-skill, 2 active skills x 2
 
-        for(int i = 0; i < equippedSkillsIndex.Length; i++)
-        {
-            equippedSkillsIndex[i] = 0;
-        }
+        // Testing
+        equippedSkills[0] = skillsIndex[SkillAssigner.SkillNames.JUDGEMENT];
+        equippedSkills[1] = skillsIndex[SkillAssigner.SkillNames.PURGE];
+        equippedSkills[2] = skillsIndex[SkillAssigner.SkillNames.HEAL];
+        equippedSkills[3] = skillsIndex[SkillAssigner.SkillNames.ACTIVEHEALING];
+        equippedSkills[4] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
+        equippedSkills[5] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
+        equippedSkills[6] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
+
+        equippedSkills[7] = skillsIndex[SkillAssigner.SkillNames.HRAESBEAT];
+        equippedSkills[8] = skillsIndex[SkillAssigner.SkillNames.KNIFETHROW];
+        equippedSkills[9] = skillsIndex[SkillAssigner.SkillNames.REALLOCATE];
+        equippedSkills[10] = skillsIndex[SkillAssigner.SkillNames.AGILITY];
+        equippedSkills[11] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
+        equippedSkills[12] = skillsIndex[SkillAssigner.SkillNames.TELEPORT];
+        equippedSkills[13] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
 
         if (gameState == 0)
         {
             GameObject UIProfileObject = new GameObject();
             ui = UIProfileObject.AddComponent<UIProfile>();
 
-            ui.Init(null, skillGroup, equippedSkillsIndex);
+            ui.Init(null, skillsList, equippedSkills);
             // GameState = -99  //Testing
-        }
-
-        // Testing
-        for(int i = 0; i < 14; i++)
-        {
-            equippedSkillsIndex[i] = 1;
         }
 
         if (gameState == 1)
         {
-            // Revisit this section later
-            // 3 block skills, 1 perk, 1 auto-skill, 2 active skills x 2
-
-            // Testing
-            equippedSkills[0] = FindEquippedSkill(0, SkillAssigner.SkillNames.JUDGEMENT);
-            equippedSkills[1] = FindEquippedSkill(1, SkillAssigner.SkillNames.FREASTORM);
-            equippedSkills[2] = FindEquippedSkill(2, SkillAssigner.SkillNames.HEAL);
-            equippedSkills[3] = FindEquippedSkill(3, SkillAssigner.SkillNames.ACTIVEHEALING);
-            equippedSkills[4] = FindEquippedSkill(4, SkillAssigner.SkillNames.FIREBALL);
-            equippedSkills[5] = FindEquippedSkill(4, SkillAssigner.SkillNames.FIREBALL);
-            equippedSkills[6] = FindEquippedSkill(4, SkillAssigner.SkillNames.FIREBALL);
-
-            equippedSkills[7] = FindEquippedSkill(0, SkillAssigner.SkillNames.HRAESBEAT);
-            equippedSkills[8] = FindEquippedSkill(1, SkillAssigner.SkillNames.KNIFETHROW);
-            equippedSkills[9] = FindEquippedSkill(2, SkillAssigner.SkillNames.REALLOCATE);
-            equippedSkills[10] = FindEquippedSkill(3, SkillAssigner.SkillNames.AGILITY);
-            equippedSkills[11] = FindEquippedSkill(4, SkillAssigner.SkillNames.TELEPORT);
-            equippedSkills[12] = FindEquippedSkill(4, SkillAssigner.SkillNames.FIREBALL);
-            equippedSkills[13] = FindEquippedSkill(4, SkillAssigner.SkillNames.FIREBALL);
-
-
             GameObject levelHandlerObject = new GameObject();
             levelHandler = levelHandlerObject.AddComponent<LevelGenerator>();
+
+           // levelHandler.LoadPlayers(equippedSkills, charStats, equippedLevelVariants);
 
             levelHandler.LoadPlayers(equippedSkills, charStats);
             LevelGenerator.EnemyNames[] loadEnemies = { LevelGenerator.EnemyNames.GOBLIN, LevelGenerator.EnemyNames.GARGOYLE };
@@ -222,8 +223,9 @@ public class GameHandler : MonoBehaviour {
             //gameState = -99;            // Standby
         }
     }
-	
-	// Update is called once per frame
-	void Update () {
-	}
+
+    // Update is called once per frame
+    void Update()
+    {
+    }
 }

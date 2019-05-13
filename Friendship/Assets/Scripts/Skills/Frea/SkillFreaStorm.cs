@@ -28,7 +28,7 @@ public class SkillFreaStorm : Skills {
                 FreaCloneObject.GetComponent<Projectile>().SetNumHits(100);
                 FreaCloneObject.GetComponent<Projectile>().SetPower(power);
                 // No buff handler???
-                FreaCloneObject.GetComponent<Projectile>().SetTrajectory(FreaCloneObject.GetComponent<Projectile>().GetHSpeed() * Random.Range(0.8f, 1f), null);
+                FreaCloneObject.GetComponent<Projectile>().SetTrajectory(FreaCloneObject.GetComponent<Projectile>().GetHSpeed() * Random.Range(0.8f, 1f));
                 summonTimer = 0.1f;
 
                 if(summClones < 0)

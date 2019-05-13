@@ -8,6 +8,7 @@ TagManager:
   - HUD
   - LevelHandler
   - Projectile
+  - Coin
   layers:
   - Default
   - TransparentFX
@@ -18,8 +19,8 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - 
-  - 
+  - Invincible
+  - Stunned
   - 
   - 
   - 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Mod
 // Modified from another project
 public abstract class Skills : MonoBehaviour
 {
@@ -40,6 +41,10 @@ public abstract class Skills : MonoBehaviour
     {
         variation = skillVariant;
         level = skillLevel;
+        return;
+    }
+    public virtual void SwitchOut()
+    {
         return;
     }
     //All inherited classes will need to define what their activated effect is.

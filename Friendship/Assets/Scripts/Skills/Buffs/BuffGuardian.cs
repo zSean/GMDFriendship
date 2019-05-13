@@ -12,7 +12,7 @@ public class BuffGuardian : StatusEffect {
         {
             gameObject.GetComponent<CharacterStats>().SetCurrentStat(1, 1);
             buffTimer = maxBuffTimer;
-            reference.PlayerKnockedOut();
+    //        reference.PlayerKnockedOut();
         }
     }
 

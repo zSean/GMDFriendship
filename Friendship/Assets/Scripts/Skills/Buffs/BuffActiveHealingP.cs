@@ -8,19 +8,19 @@ public class BuffActiveHealingP : StatusEffect
     BuffActiveHealing activeHealParent;
 
     // Only activates on character in play
-    public override void Activate(int characterState, GameObject sender)
+    public override void Activate(int characterState, GameObject sender, ref float power)
     {
         if ((characterState == procType) && (activeHealParent != null))
-            activeHealParent.Activate(procType, parent);
+            activeHealParent.Activate(procType, parent, ref power);
         return;
     }
 
-    public override string buffDescription()
+    public override string BuffDescription()
     {
         return "HoT counter";
     }
 
-    public override void buffDestroy()
+    public override void BuffDestroy()
     {
         gameObject.GetComponent<BuffHandler>().RemoveBuff(this);
         Destroy(this);

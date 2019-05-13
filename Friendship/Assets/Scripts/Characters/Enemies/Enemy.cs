@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+// Mod
 public class Enemy : CharacterStats {
 
     protected bool autoMove = true;
     protected bool onPlatform = false;    // On moving platform
+    protected bool isStunned = false;
     protected Vector2 moveSpeed = StandardLevel.sMoveSpeed;
     protected int points = 1;
 
@@ -49,10 +51,21 @@ public class Enemy : CharacterStats {
         defaultScrolling.SetAutoMove(autoMove);
     }
 
+    public void SetStun(bool stun)
+    {
+        isStunned = stun;
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Player")
-            Destroy(gameObject);
+        {
+            if (!isStunned)
+            {
+                DamageCalculations.ApplyCalculation(collision.gameObject, gameObject, currentCharStats[1]);
+                Destroy(gameObject);
+            }
+        }
     }
 
     protected void OnDestroy()

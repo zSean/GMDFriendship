@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Mod
 public class BlockGenerator : MonoBehaviour {
 
     GameObject block;
@@ -14,6 +15,7 @@ public class BlockGenerator : MonoBehaviour {
     List<Block> blockList;
     Skills[] blockSkills;
     int reqBlocks = 3;
+    int bonusBlocks = 0;
 
     LevelGenerator parent;
 
@@ -33,6 +35,20 @@ public class BlockGenerator : MonoBehaviour {
     {
         // GC?
         blockSkills[index] = newSkill;
+    }
+    public void SetBlockTimer(float newTime)
+    {
+        blockTimer = newTime;
+    }
+    public void SetBonusBlocks(int setBonus)
+    {
+        if (setBonus < 0)
+            setBonus = 0;
+        bonusBlocks = setBonus;
+    }
+    public int GetBonusBlockAmount()
+    {
+        return bonusBlocks;
     }
 
     // Update is called once per frame
@@ -80,7 +96,7 @@ public class BlockGenerator : MonoBehaviour {
         }
 
         // First activate the block skill and chain number
-        if (reqBlocks <= blocksRemoved + 1)
+        if (reqBlocks <= bonusBlocks + blocksRemoved + 1)
         {
             // Remove if statement later
             if (blockSkills[activatedBlock.GetComponent<Block>().GetBlockType()] != null)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Mod
 public static class DamageCalculations
 {
     public static void ApplyCalculation(GameObject target, GameObject sender, float power)
@@ -21,18 +22,18 @@ public static class DamageCalculations
                 {
                     if (Random.Range(0, 101) < target.GetComponent<CharacterStats>().GetCurrentStat(4))
                     {
-                        target.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.dodge, sender);
+                        target.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.dodge, sender, ref power);
                         if(sender.GetComponent<BuffHandler>() != null)
-                            sender.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.dodged, target);
+                            sender.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.dodged, target, ref power);
                         return;
                     }
                 }
                 // OnAttack, OnDefend
                 if (calculateModule[1])
                 {
-                    target.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.attacked, sender);
+                    target.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.attacked, sender, ref power);
                     if(sender.GetComponent<BuffHandler>() != null)
-                        sender.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.damaged, target);
+                        sender.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.damaged, target, ref power);
                 }
             }
             if (calculateModule[1])
@@ -40,7 +41,7 @@ public static class DamageCalculations
                 target.GetComponent<CharacterStats>().Attacked((int)power);
 
                 if (((target == null) || (target.GetComponent<CharacterStats>().GetCurrentStat(1) <= 0)) && sender.GetComponent<BuffHandler>() != null)
-                    sender.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.kill, sender);
+                    sender.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.kill, sender, ref power);
             }
         }
     }

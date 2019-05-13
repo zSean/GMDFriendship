@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Mod
 public class Projectile : MonoBehaviour {
 
     GameObject parent;  // Used if the projectile ever needs to be traced back to its parent
@@ -10,6 +11,7 @@ public class Projectile : MonoBehaviour {
     protected float speed = 0.3f;
     protected int numHits = 0;    // Number of hits the projectile can take before destroying. < 0 = based on timer
     protected float life = 3f;
+    protected bool instantKill = false;
 
     // y = ax^2 + bx + c...if the projectile needs its y value modified. Set to 0 otherwise
     protected float[] speedY = { 0f, 0f, 0f };
@@ -54,14 +56,14 @@ public class Projectile : MonoBehaviour {
     {
         return numHits;
     }
-    public void SetTrajectory(float speedX, float[] speedY = null)
+    public void SetTrajectory(float speedX, float c = 0, float b = 0, float a = 0)
     {
         speed = speedX;
         if (speedY != null)
         {
-            this.speedY[0] = speedY[0];
-            this.speedY[1] = speedY[1];
-            this.speedY[2] = speedY[2];
+            this.speedY[0] = a;
+            this.speedY[1] = b;
+            this.speedY[2] = c;
         }
     }
     public float GetHSpeed()
@@ -82,8 +84,16 @@ public class Projectile : MonoBehaviour {
     {
         return actions;
     }
+    public void SetInstantKill(bool setKill)
+    {
+        instantKill = setKill;
+    }
+    public void SetLifeSpan(float lifeSpan)
+    {
+        life = lifeSpan;
+    }
 
-    private void Update()
+    protected virtual void Update()
     {
         life -= Time.deltaTime;
         if (life <= 0)

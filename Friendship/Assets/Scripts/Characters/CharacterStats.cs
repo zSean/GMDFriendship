@@ -4,7 +4,7 @@ using UnityEngine;
 
 enum CharacterStates
 {
-    none, attacked, damaged, dodge, dodged, kill
+    none, attacked, damaged, dodge, dodged, kill, dead, swapIn, swapOut
 }
 
 public struct Stats

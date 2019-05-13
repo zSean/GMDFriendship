@@ -10,8 +10,8 @@ public class BuffRapidReload : StatusEffect {
     {
         // Disable when this character is active
         if(characterState == (int)CharacterStates.swapIn)
-            reference.GetGenerator().SetBonusBlocks(reference.GetGenerator().GetBonusBlockAmount() - 1);
-        else if(characterState == (int)CharacterStates.swapOut) //Re-enable
+            reference.GetGenerator().SetBonusBlocks(reference.GetGenerator().GetBonusBlockAmount() - 1);    // If swapping out, decrease bonus block count by 1
+        else if(characterState == (int)CharacterStates.swapOut) //Re-enable. Increase bonus block count by 1
         {
             if(gameObject.GetComponent<CharacterStats>().GetCurrentStat(1) > 0)
                 reference.GetGenerator().SetBonusBlocks(reference.GetGenerator().GetBonusBlockAmount() + 1);
