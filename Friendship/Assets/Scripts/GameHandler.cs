@@ -62,7 +62,7 @@ public class GameHandler : MonoBehaviour
                 tempPath = path[i];
             else
                 tempPath = null;
-            SkillProperties newSkill = new SkillProperties(skillNames[i], i, variants, tempPath);
+            SkillProperties newSkill = new SkillProperties(skillNames[i], i % (skillNames.Count / 2), variants, tempPath);
             newSkills.Add(newSkill);    // Add new skill to the groups (aerial, flurry, buff etc)
             skillsIndex[skillNames[i]] = newSkill; // Also add that skill to a dictionary so it can be looked up easily when loading skills
         }
@@ -179,7 +179,8 @@ public class GameHandler : MonoBehaviour
         equippedLevelVariants = new List<int>();
 
         // Revisit this section later
-        equippedSkills = new SkillProperties[14];  // 3 block skills, 1 perk, 1 auto-skill, 2 active skills x 2
+        //equippedSkills = new SkillProperties[14];  // 3 block skills, 1 perk, 1 auto-skill, 2 active skills x 2
+        equippedSkills = new SkillProperties[10];  // 3 block skills, 1 perk, 1 auto-skill x 2. TESTING
 
         // Testing
         equippedSkills[0] = skillsIndex[SkillAssigner.SkillNames.JUDGEMENT];
@@ -187,23 +188,29 @@ public class GameHandler : MonoBehaviour
         equippedSkills[2] = skillsIndex[SkillAssigner.SkillNames.HEAL];
         equippedSkills[3] = skillsIndex[SkillAssigner.SkillNames.ACTIVEHEALING];
         equippedSkills[4] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
-        equippedSkills[5] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
-        equippedSkills[6] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
+        // equippedSkills[5] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
+        // equippedSkills[6] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
 
-        equippedSkills[7] = skillsIndex[SkillAssigner.SkillNames.HRAESBEAT];
-        equippedSkills[8] = skillsIndex[SkillAssigner.SkillNames.KNIFETHROW];
-        equippedSkills[9] = skillsIndex[SkillAssigner.SkillNames.REALLOCATE];
-        equippedSkills[10] = skillsIndex[SkillAssigner.SkillNames.AGILITY];
-        equippedSkills[11] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
-        equippedSkills[12] = skillsIndex[SkillAssigner.SkillNames.TELEPORT];
-        equippedSkills[13] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
+        equippedSkills[5] = skillsIndex[SkillAssigner.SkillNames.HRAESBEAT];
+        equippedSkills[6] = skillsIndex[SkillAssigner.SkillNames.KNIFETHROW];
+        equippedSkills[7] = skillsIndex[SkillAssigner.SkillNames.REALLOCATE];
+        equippedSkills[8] = skillsIndex[SkillAssigner.SkillNames.AGILITY];
+        equippedSkills[9] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
+
+        // equippedSkills[7] = skillsIndex[SkillAssigner.SkillNames.HRAESBEAT];
+        // equippedSkills[8] = skillsIndex[SkillAssigner.SkillNames.KNIFETHROW];
+        // equippedSkills[9] = skillsIndex[SkillAssigner.SkillNames.REALLOCATE];
+        // equippedSkills[10] = skillsIndex[SkillAssigner.SkillNames.AGILITY];
+        // equippedSkills[11] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
+        // equippedSkills[12] = skillsIndex[SkillAssigner.SkillNames.TELEPORT];
+        // equippedSkills[13] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
 
         if (gameState == 0)
         {
             GameObject UIProfileObject = new GameObject();
             ui = UIProfileObject.AddComponent<UIProfile>();
 
-            ui.Init(null, skillsList, equippedSkills);
+            ui.Init(null, skillsList, equippedSkills, charStats);
             // GameState = -99  //Testing
         }
 

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class UIStatMenu : MenuHandler {
 
     MenuButton[] statButtons;   // These are just the buttons. Will need something to store the actual stats
+    Stats[] characterStats; // Stats of each character. Ref from GameHandler.cs
     int numStats = 5;   // 5,6 = Frea; 7,8 = Luna
     int specialStats = 2;
     int numCharacters = 2;
@@ -31,6 +32,12 @@ public class UIStatMenu : MenuHandler {
         return;
     }
 
+    public void Init(MenuHandler parent, Stats[] charStats)
+    {
+        characterStats = charStats;
+        Init(parent);
+    }
+
     // WIP. Need stats to be implemented first
     public override void ChangeMenu(int newButton)
     {
@@ -39,7 +46,7 @@ public class UIStatMenu : MenuHandler {
         // Print out stats for the selected character
         for (int i = 0; i < numStats; i++)
         {
-            statButtons[i].SetTextProperties(statText[i] /*+ Mathf.Max(0, ((i - numStats - specialStats * (characterSelect + 1))))]*/, font, 10, TextAnchor.MiddleLeft);
+            statButtons[i].SetTextProperties(statText[i] + ": " + characterStats[characterSelect].maxCharStats[i]/*+ Mathf.Max(0, ((i - numStats - specialStats * (characterSelect + 1))))]*/, font, 10, TextAnchor.MiddleLeft);
         }
         return;
     }
