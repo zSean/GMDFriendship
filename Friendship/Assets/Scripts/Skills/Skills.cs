@@ -8,11 +8,16 @@ public abstract class Skills : MonoBehaviour
 {
     protected GameObject parent;
     protected int level;
-    protected int variation = 0; // 0 being the base, -1 and 1 are the variants
+    protected int variation = 0; // 0 being the base, 1 and 2 are the variants
     protected float power;  //Power of the skill, whether it's dmg or healing (1.00 = 100%)
     protected int manaCost = 0; // Mana cost at 2c. For 1c, the cost may be doubled, 3c has no mana cost
     public Sprite skillImage;
     protected int animationTime = 0;    // If animation time is required before next attack can proceed
+
+    public int GetVariant()
+    {
+        return variation;
+    }
 
     public float GetPower()
     {

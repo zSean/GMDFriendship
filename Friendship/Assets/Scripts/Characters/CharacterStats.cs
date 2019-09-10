@@ -112,7 +112,7 @@ public class CharacterStats : MonoBehaviour {
     }
 
     // Set to public. Who knows? There may be skills/cutscenes that insta-kill. Function to be overridden for main characters
-    public void DestroyCharacter()
+    public virtual void DestroyCharacter()
     {
         Destroy(gameObject);
     }

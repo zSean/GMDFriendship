@@ -8,6 +8,7 @@ public class PlayableChar : CharacterStats {
     PlayerMovement control;
 
     int playerState = 0;    // Active, inactive etc...
+    int playerIndex = -1;
     float maxAutoAttackTimer = 10f;
     float autoAttackTimer;
 
@@ -15,6 +16,7 @@ public class PlayableChar : CharacterStats {
     Skills[] skillEquip = new Skills[4];
     // 1 auto, 2 actives
     ActiveSkills[] activeSkillEquip = new ActiveSkills[3];
+    LevelGenerator level;
 
     protected override void Awake()
     {
@@ -72,6 +74,14 @@ public class PlayableChar : CharacterStats {
                 playerState = 2;
                 print("Attack Launched!!!");
                 break;
+            case 5: // Dead
+                control.enabled = false;
+                gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+                gameObject.GetComponent<CircleCollider2D>().enabled = false;
+                playerState = 6;    // Move to stateless
+                break;
+            default:
+                break;
         }
     }
 
@@ -118,5 +128,24 @@ public class PlayableChar : CharacterStats {
     public Skills GetBlockSkill(int skillIndex)
     {
         return skillEquip[skillIndex];
+    }
+
+    public override void DestroyCharacter()
+    {
+        level.PlayerDead(playerIndex);
+    }
+
+    public void SetLevelGenerator(LevelGenerator setGenerator)
+    {
+        level = setGenerator;
+    }
+
+    public void SetPlayerIndex(int newIndex)
+    {
+        playerIndex = newIndex;
+    }
+    public int GetPlayerIndex()
+    {
+        return playerIndex;
     }
 }

@@ -10,78 +10,117 @@ public static class SkillAssigner{
         FIREBALL, ELEGANCE, SHOOT, TELEPORT, SIXTHSENSE, BOMBTOSS
     };
 
-    public static Skills AssignSkill(GameObject parent, SkillNames skill)
+    private static Skills newSkill;
+    private static ActiveSkills newActiveSkill;
+
+    public static Skills AssignSkill(GameObject parent, SkillNames skill, int skillLevel, int variant)
     {
         switch (skill)
         {
             case SkillNames.JUDGEMENT:
-                return parent.AddComponent<SkillJudgement>();
+                newSkill = parent.AddComponent<SkillJudgement>();
+                break;
             case SkillNames.PURGE:
-                return parent.AddComponent<SkillPurge>();
+                newSkill = parent.AddComponent<SkillPurge>();
+                break;
             case SkillNames.HEAL:
-                return parent.AddComponent<SkillHeal>();
+                newSkill = parent.AddComponent<SkillHeal>();
+                break;
             case SkillNames.ACTIVEHEALING:
-                return parent.AddComponent<SkillActiveHealing>();
+                newSkill = parent.AddComponent<SkillActiveHealing>();
+                break;
             case SkillNames.BOLT:
-                return parent.AddComponent<SkillBolt>();
+                newSkill = parent.AddComponent<SkillBolt>();
+                break;
             case SkillNames.FREASTORM:
-                return parent.AddComponent<SkillFreaStorm>();
+                newSkill = parent.AddComponent<SkillFreaStorm>();
+                break;
             case SkillNames.GUARDIAN:
-                return parent.AddComponent<SkillGuardian>();
+                newSkill = parent.AddComponent<SkillGuardian>();
+                break;
             case SkillNames.ICESPEAR:
-                return parent.AddComponent<SkillIcicles>();
+                newSkill = parent.AddComponent<SkillIcicles>();
+                break;
             case SkillNames.ETERNALFLAME:
-                return parent.AddComponent<SkillEternalFire>();
+                newSkill = parent.AddComponent<SkillEternalFire>();
+                break;
             case SkillNames.SPIRITFOX:
-                return parent.AddComponent<SkillSpiritFox>();
+                newSkill = parent.AddComponent<SkillSpiritFox>();
+                break;
             case SkillNames.PURITY:
-                return parent.AddComponent<SkillPurity>();
+                newSkill = parent.AddComponent<SkillPurity>();
+                break;
             case SkillNames.WARMTH:
-                return parent.AddComponent<SkillWarmth>();
+                newSkill = parent.AddComponent<SkillWarmth>();
+                break;
             case SkillNames.HRAESBEAT:
-                return parent.AddComponent<SkillHraesBeat>();
+                newSkill = parent.AddComponent<SkillHraesBeat>();
+                break;
             case SkillNames.KNIFETHROW:
-                return parent.AddComponent<SkillKnifeThrow>();
+                newSkill = parent.AddComponent<SkillKnifeThrow>();
+                break;
             case SkillNames.REALLOCATE:
-                return parent.AddComponent<SkillReallocate>();
+                newSkill = parent.AddComponent<SkillReallocate>();
+                break;
             case SkillNames.AGILITY:
-                return parent.AddComponent<SkillAgility>();
+                newSkill = parent.AddComponent<SkillAgility>();
+                break;
             // NOT ADDED YET!!!
             case SkillNames.FALLENWINGS:
-                return parent.AddComponent<SkillWingBomb>();
+                newSkill = parent.AddComponent<SkillWingBomb>();
+                break;
             case SkillNames.FEATHERDANCE:
-                return parent.AddComponent<SkillKnifeThrow>();
+                newSkill = parent.AddComponent<SkillKnifeThrow>();
+                break;
             ///
             case SkillNames.FEATHERSHIELD:
-                return parent.AddComponent<SkillFeatherShield>();
+                newSkill = parent.AddComponent<SkillFeatherShield>();
+                break;
             case SkillNames.NIGHTMARE:
-                return parent.AddComponent<SkillNightmare>();
+                newSkill = parent.AddComponent<SkillNightmare>();
+                break;
             case SkillNames.RAPIDRELOAD:
-                return parent.AddComponent<SkillRapidReload>();
+                newSkill = parent.AddComponent<SkillRapidReload>();
+                break;
                 // NOT ADDED YET!!!
             case SkillNames.ROOST:
-                return parent.AddComponent<SkillReallocate>();
+                newSkill = parent.AddComponent<SkillReallocate>();
+                break;
             ///
             case SkillNames.SALVO:
-                return parent.AddComponent<SkillSalvo>();
+                newSkill = parent.AddComponent<SkillSalvo>();
+                break;
             case SkillNames.WINGBOMB:
-                return parent.AddComponent<SkillWingBomb>();
-
+                newSkill = parent.AddComponent<SkillWingBomb>();
+                break;
             default:
-                return null;
+                newSkill = null;
+                break;
         }
+
+        newSkill?.Init(variant, skillLevel);
+
+        return newSkill;
     }
 
-    public static ActiveSkills AssignActiveSkill(GameObject parent, SkillNames skill)
+    public static ActiveSkills AssignActiveSkill(GameObject parent, SkillNames skill, int level, int variant)
     {
+        newActiveSkill = null;
         switch (skill)
         {
             case SkillNames.FIREBALL:
-                return parent.AddComponent<SkillFireball>();
+                newActiveSkill = parent.AddComponent<SkillFireball>();
+                break;
             case SkillNames.TELEPORT:
-                return parent.AddComponent<SkillTeleport>();
+                newActiveSkill = parent.AddComponent<SkillTeleport>();
+                break;
             default:
-                return null;
+                newActiveSkill = null;
+                break;
         }
+
+        newActiveSkill?.Init(variant, level);
+
+        return newActiveSkill;
     }
 }

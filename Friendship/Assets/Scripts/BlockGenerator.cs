@@ -19,23 +19,35 @@ public class BlockGenerator : MonoBehaviour {
 
     LevelGenerator parent;
 
+    Sprite[] blockSprites = { null, null, null };
+
     public void Init()
     {
         block = (GameObject)Resources.Load("Block");
-        blockSkills = new Skills[3];
         totalDistance = Camera.main.orthographicSize * 2 / 6;
         blockOffset = -Camera.main.orthographicSize * 2/3 + (block.GetComponent<SpriteRenderer>().bounds.size.x);
         blockList = new List<Block>();
+        blockSkills = new Skills[3];
     }
     public void SetLevelGenerator(LevelGenerator levelGenerator)
     {
         parent = levelGenerator;
     }
-    public void SetBlockSkill(int index, Skills newSkill)
+
+    public void SetBlockSkill(int index, Skills newSkill, string blockImagePath)
     {
-        // GC?
         blockSkills[index] = newSkill;
+        blockSprites[index] = Resources.LoadAll<Sprite>(blockImagePath)[newSkill.GetVariant()];
     }
+
+    public void UpdateBlockSprites()
+    {
+        for(int i = 0; i < blockList.Count; i++)
+        {
+            blockList[i].gameObject.GetComponent<SpriteRenderer>().sprite = blockSprites[blockList[i].GetBlockType()];
+        }
+    }
+
     public void SetBlockTimer(float newTime)
     {
         blockTimer = newTime;
@@ -61,6 +73,7 @@ public class BlockGenerator : MonoBehaviour {
             blockClone = Instantiate(block, new Vector3(Camera.main.transform.position.x - 2 * Camera.main.orthographicSize, transform.position.y), transform.rotation);
             int randomType = Random.Range(0, 3);
             blockClone.GetComponent<Block>().SetBlockType(randomType);
+            blockClone.GetComponent<SpriteRenderer>().sprite = blockSprites[randomType];
             blockClone.GetComponent<Block>().SetBlockGenerator(this);
             blockClone.GetComponent<Block>().SetDestination(totalDistance * (10 - blockCount) - (blockOffset));
             blockList.Add(blockClone.GetComponent<Block>());

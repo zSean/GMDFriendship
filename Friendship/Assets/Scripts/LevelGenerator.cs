@@ -43,13 +43,16 @@ public class LevelGenerator : MonoBehaviour {
 
     // Tracking enemies and player
     public enum EnemyNames { GOBLIN, GARGOYLE };
-    List<EnemyNames> levelEnemyTypes = new List<EnemyNames>();  // For loading particular enemies onto the level
+    List<EnemyNames> levelEnemyTypes = new List<EnemyNames>() { EnemyNames.GOBLIN };  // For loading particular enemies onto the level
     Transform[] enemyPos;
+
+    // Use a tuple instead
+    Dictionary<Skills, SkillProperties> skills = new Dictionary<Skills, SkillProperties>();
+    Skills ptr = null;  // Temp holder when swapping skills
 
     public void Init()
     {
         // Default values
-        levelEnemyTypes.Add(EnemyNames.GOBLIN);
 
         enemy = (GameObject)Resources.Load("EnemyPrototype");
         platform = (GameObject)Resources.Load("Platform");
@@ -90,6 +93,9 @@ public class LevelGenerator : MonoBehaviour {
             GameObject playerObjectClone = Instantiate(playerObject, new Vector3(0f, 0f), transform.rotation);
             player[i] = playerObjectClone.GetComponent<PlayableChar>();
             player[i].SetPlayerState(2);    // For init purposes. This is required
+            player[i].SetLevelGenerator(this);
+            player[i].SetPlayerIndex(i);
+
             // Assign stats
             for (int j = 0; j < playerStats[i].maxCharStats.Length; j++)
             {
@@ -101,10 +107,13 @@ public class LevelGenerator : MonoBehaviour {
             {
                 if (j % 7 < 4)
                 {
-                    player[i].EquipBlockSkill(j % 7, SkillAssigner.AssignSkill(playerObjectClone, playerSkills[j].name));
+                    player[i].EquipBlockSkill(j % 7, SkillAssigner.AssignSkill(playerObjectClone, playerSkills[j].name, playerSkills[j].level[playerSkills[j].variant], playerSkills[j].variant));
+                    skills[player[i].GetBlockSkill(j % 7)] = playerSkills[j];
                 }
                 else
-                    player[i].EquipActiveSkill(j % 7 - 4, SkillAssigner.AssignActiveSkill(playerObjectClone, playerSkills[j].name));
+                {
+                    player[i].EquipActiveSkill(j % 7 - 4, SkillAssigner.AssignActiveSkill(playerObjectClone, playerSkills[j].name, playerSkills[j].level[playerSkills[j].variant], playerSkills[j].variant));
+                }
             }
         }
 
@@ -219,6 +228,14 @@ public class LevelGenerator : MonoBehaviour {
         }
 	}
 
+    public void PlayerDead(int index)
+    {
+        if ((player[(index + 1) % 2].GetCurrentStat(1) > 0))
+            SwapPlayers((index + 1) % 2);
+        else
+            print("DEAD!!!");
+    }
+
     public void SwapPlayers(int select)
     {
         // If the player to be swapped has hp > 0 and is on standby
@@ -235,7 +252,9 @@ public class LevelGenerator : MonoBehaviour {
 
             for (int i = 0; i < 3; i++)
             {
-                blockGenerator.SetBlockSkill(i, player[selectedPlayer].GetBlockSkill(i));
+                ptr = player[selectedPlayer].GetBlockSkill(i);
+                blockGenerator.SetBlockSkill(i, ptr, skills[ptr].skillImagePath);
+                blockGenerator.UpdateBlockSprites();    //actual pointer to sprite would be nice
             }
 
             selectedPlayer = select;

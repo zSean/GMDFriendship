@@ -17,7 +17,7 @@ public class UISkillTreeMenu : MenuHandler {
     Dictionary<int, SkillProperties[]> skills;
     Dictionary<int, List<Sprite[]>> skillImage = new Dictionary<int, List<Sprite[]>>();
     MenuButton[] skillButtons;
-    int[] equippedSkills;
+    int[,] equippedSkills;
     Sprite lockedSkill;
 
     // Currently selected buttons for each skill
@@ -45,7 +45,6 @@ public class UISkillTreeMenu : MenuHandler {
         skillTypes = new MenuButton[numSkillTypes];
 
         string[] skillHeader = { "Aerial", "Flurry", "Buff", "Perk" };
-      //  equippedSkills = new int[7];    // Aerial, Flurry, Buff, Perk, Active x2
         numSkillTypes = skillHeader.Length;
 
         for (int i = 0; i < numSkillTypes; i++)
@@ -125,22 +124,28 @@ public class UISkillTreeMenu : MenuHandler {
         upgradeButton.SetTextboxSize(upgradeButtonObject.GetComponent<Image>().rectTransform.sizeDelta);
     }
 
-    public void Init(MenuHandler parent, Dictionary<int, SkillProperties[]> loadedStats, SkillProperties[] equippedSkills)
+    public void Init(MenuHandler parent, ref Dictionary<int, SkillProperties[]> loadedStats, ref int[,] equippedSkills /*ref SkillProperties[] equippedSkills*/)
     {
         skills = loadedStats;
-        selectedButtons = new int[equippedSkills.Length];
+        selectedButtons = new int[equippedSkills.Length / 2];
+
         for(int i = 0; i < selectedButtons.Length; i++)
         {
-            selectedButtons[i] = equippedSkills[i].buttonNumber * 3 + equippedSkills[i].variant;
+            selectedButtons[i] = equippedSkills[i, 0] + equippedSkills[i, 1];
         }
-        this.equippedSkills = new int[selectedButtons.Length];
-        selectedButtons.CopyTo(this.equippedSkills, 0); // selectedButtons initially starts off the same as equippedSkills
+
+        this.equippedSkills = equippedSkills; // selectedButtons initially starts off the same as equippedSkills
         Init(parent);
     }
 
     public Dictionary<int, SkillProperties[]> ReturnSkills()
     {
         return skills;
+    }
+
+    public int[,] ReturnEquippedSkills()
+    {
+        return equippedSkills;
     }
 
     private void TreeArrangement(SkillProperties[] skillSet)
@@ -225,7 +230,9 @@ public class UISkillTreeMenu : MenuHandler {
         }
         else if (newButton == numSkillTypes + 1) // If the equip button was clicked on
         {
-            equippedSkills[tracker + switchChar * numberOfSkillTypes] = selectedButtons[tracker];
+            // ACTIVE SKILLS OFFSET
+            equippedSkills[tracker + switchChar * (numberOfSkillTypes + 2), 0] = selectedButtons[tracker] - (selectedButtons[tracker] % 3);
+            equippedSkills[tracker + switchChar * (numberOfSkillTypes + 2), 1] = selectedButtons[tracker] % 3;
             equipImage.sprite = skillButtons[selectedButtons[tracker]].gameObject.GetComponent<Image>().sprite;
         }
         else if (newButton == numSkillTypes + 2)    // If the upgrade button was clicked on
@@ -233,19 +240,17 @@ public class UISkillTreeMenu : MenuHandler {
             // Max stat cap at level 5. Upgrading 1 skill upgrades ALL OF THAT SKILL'S VARIANTS. ASSUME: Only the base skill [0] can be upgraded
             if (skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / 2].level[0] < 5)
             {
-                //  skills[tracker][selectedButtons[tracker] / 3].level[selectedButtons[tracker] % 3]++;
-
                 skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / 2].level[0]++;
                 skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / 2].level[1]++;
                 skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / 2].level[2]++;
 
                 if (skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / 2].level[0] >= 5)
                 {
-                    skillButtons[selectedButtons[tracker] + 1].SetText(SkillDescriptions.ReturnDescription(skills[tracker][selectedButtons[tracker] / 3], 1));
-                    skillButtons[selectedButtons[tracker] + 2].SetText(SkillDescriptions.ReturnDescription(skills[tracker][selectedButtons[tracker] / 3], 2));
+                    skillButtons[selectedButtons[tracker] + 1].SetText(SkillDescriptions.ReturnDescription(skills[tracker][switchChar * skills[tracker].Length / 2 + selectedButtons[tracker] / 3], 1));
+                    skillButtons[selectedButtons[tracker] + 2].SetText(SkillDescriptions.ReturnDescription(skills[tracker][switchChar * skills[tracker].Length / 2 + selectedButtons[tracker] / 3], 2));
 
-                    skillButtons[selectedButtons[tracker] + 1].GetComponent<Image>().sprite = skillImage[tracker][selectedButtons[tracker] / 3][1];
-                    skillButtons[selectedButtons[tracker] + 2].GetComponent<Image>().sprite = skillImage[tracker][selectedButtons[tracker] / 3][2];
+                    skillButtons[selectedButtons[tracker] + 1].GetComponent<Image>().sprite = skillImage[tracker][switchChar * skills[tracker].Length / 2 + selectedButtons[tracker] / 3][1];
+                    skillButtons[selectedButtons[tracker] + 2].GetComponent<Image>().sprite = skillImage[tracker][switchChar * skills[tracker].Length / 2 + selectedButtons[tracker] / 3][2];
 
                     upgradeButton.enabled = false;
                     upgradeButton.gameObject.GetComponent<Button>().enabled = false;
@@ -263,7 +268,7 @@ public class UISkillTreeMenu : MenuHandler {
             equipButton.gameObject.GetComponent<Button>().enabled = false;
             equipButton.gameObject.GetComponent<Image>().enabled = false;
             equipButton.enabled = false;
-            equipImage.sprite = skillButtons[equippedSkills[tracker + switchChar * numberOfSkillTypes]].gameObject.GetComponent<Image>().sprite;
+            equipImage.sprite = skillButtons[equippedSkills[tracker + switchChar * numberOfSkillTypes, 0]].gameObject.GetComponent<Image>().sprite;
 
             upgradeButton.enabled = false;
             upgradeButton.gameObject.GetComponent<Button>().enabled = false;
@@ -333,6 +338,6 @@ public class UISkillTreeMenu : MenuHandler {
         upgradeButton.gameObject.GetComponent<Button>().enabled = false;
         upgradeButton.gameObject.GetComponent<Image>().enabled = false;
 
-        equipImage.sprite = skillButtons[equippedSkills[tracker + switchChar * numberOfSkillTypes]].gameObject.GetComponent<Image>().sprite;
+        equipImage.sprite = skillButtons[equippedSkills[tracker + switchChar * numberOfSkillTypes, 0]].gameObject.GetComponent<Image>().sprite;
     }
 }

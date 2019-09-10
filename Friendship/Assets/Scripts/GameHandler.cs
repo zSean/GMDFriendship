@@ -36,8 +36,7 @@ public class GameHandler : MonoBehaviour
 
     Dictionary<int, SkillProperties[]> skillsList = new Dictionary<int, SkillProperties[]>();   // key int = group (aerial, flurry, buff etc), value SkillProperties = skills
     Dictionary<SkillAssigner.SkillNames, SkillProperties> skillsIndex = new Dictionary<SkillAssigner.SkillNames, SkillProperties>();    // For assigning equipped skills
-    SkillProperties[] equippedSkills;  // Contains the equippped skills by name only
-    List<int> equippedLevelVariants;
+    int[,] equippedSkillsIndex;  // Contains the equippped skills by name only
 
     // float[,] specialStats;
 
@@ -166,7 +165,7 @@ public class GameHandler : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        DontDestroyOnLoad(this);
         // Init character stats here
         charStats = new Stats[2];
         for (int i = 0; i < 2; i++)
@@ -176,63 +175,97 @@ public class GameHandler : MonoBehaviour
         }
 
         skillsList = GenerateSkillGroupDictionary();
-        equippedLevelVariants = new List<int>();
-
+        
         // Revisit this section later
-        //equippedSkills = new SkillProperties[14];  // 3 block skills, 1 perk, 1 auto-skill, 2 active skills x 2
-        equippedSkills = new SkillProperties[10];  // 3 block skills, 1 perk, 1 auto-skill x 2. TESTING
+        equippedSkillsIndex = new int[14, 2];  // 3 block skills, 1 perk, 1 auto-skill, 2 active skills  x2
 
         // Testing
-        equippedSkills[0] = skillsIndex[SkillAssigner.SkillNames.JUDGEMENT];
-        equippedSkills[1] = skillsIndex[SkillAssigner.SkillNames.PURGE];
-        equippedSkills[2] = skillsIndex[SkillAssigner.SkillNames.HEAL];
-        equippedSkills[3] = skillsIndex[SkillAssigner.SkillNames.ACTIVEHEALING];
-        equippedSkills[4] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
-        // equippedSkills[5] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
-        // equippedSkills[6] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
+        equippedSkillsIndex[0, 0] = skillsIndex[SkillAssigner.SkillNames.JUDGEMENT].buttonNumber * 3;
+        equippedSkillsIndex[0, 1] = 0;
+        equippedSkillsIndex[1, 0] = skillsIndex[SkillAssigner.SkillNames.PURGE].buttonNumber * 3;
+        equippedSkillsIndex[1, 1] = 0;
+        equippedSkillsIndex[2, 0] = skillsIndex[SkillAssigner.SkillNames.HEAL].buttonNumber * 3;
+        equippedSkillsIndex[2, 1] = 0;
+        equippedSkillsIndex[3, 0] = skillsIndex[SkillAssigner.SkillNames.ACTIVEHEALING].buttonNumber * 3;
+        equippedSkillsIndex[3, 1] = 0;
+        // Needs testing
+        equippedSkillsIndex[4, 0] = skillsIndex[SkillAssigner.SkillNames.FIREBALL].buttonNumber * 3;
+        equippedSkillsIndex[4, 1] = 0;
+        equippedSkillsIndex[5, 0] = skillsIndex[SkillAssigner.SkillNames.FIREBALL].buttonNumber * 3;
+        equippedSkillsIndex[5, 1] = 0;
+        equippedSkillsIndex[6, 0] = skillsIndex[SkillAssigner.SkillNames.FIREBALL].buttonNumber * 3;
+        equippedSkillsIndex[6, 1] = 0;
 
-        equippedSkills[5] = skillsIndex[SkillAssigner.SkillNames.HRAESBEAT];
-        equippedSkills[6] = skillsIndex[SkillAssigner.SkillNames.KNIFETHROW];
-        equippedSkills[7] = skillsIndex[SkillAssigner.SkillNames.REALLOCATE];
-        equippedSkills[8] = skillsIndex[SkillAssigner.SkillNames.AGILITY];
-        equippedSkills[9] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
-
-        // equippedSkills[7] = skillsIndex[SkillAssigner.SkillNames.HRAESBEAT];
-        // equippedSkills[8] = skillsIndex[SkillAssigner.SkillNames.KNIFETHROW];
-        // equippedSkills[9] = skillsIndex[SkillAssigner.SkillNames.REALLOCATE];
-        // equippedSkills[10] = skillsIndex[SkillAssigner.SkillNames.AGILITY];
-        // equippedSkills[11] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
-        // equippedSkills[12] = skillsIndex[SkillAssigner.SkillNames.TELEPORT];
-        // equippedSkills[13] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
-
-        if (gameState == 0)
-        {
-            GameObject UIProfileObject = new GameObject();
-            ui = UIProfileObject.AddComponent<UIProfile>();
-
-            ui.Init(null, skillsList, equippedSkills, charStats);
-            // GameState = -99  //Testing
-        }
-
-        if (gameState == 1)
-        {
-            GameObject levelHandlerObject = new GameObject();
-            levelHandler = levelHandlerObject.AddComponent<LevelGenerator>();
-
-           // levelHandler.LoadPlayers(equippedSkills, charStats, equippedLevelVariants);
-
-            levelHandler.LoadPlayers(equippedSkills, charStats);
-            LevelGenerator.EnemyNames[] loadEnemies = { LevelGenerator.EnemyNames.GOBLIN, LevelGenerator.EnemyNames.GARGOYLE };
-            levelHandler.SetEnemies(loadEnemies);
-            GameObject testBoss = new GameObject();
-            levelHandler.SetBoss(testBoss.AddComponent<BossSpawn>());
-            levelHandler.Init();
-            //gameState = -99;            // Standby
-        }
+        equippedSkillsIndex[7, 0] = skillsIndex[SkillAssigner.SkillNames.HRAESBEAT].buttonNumber * 3;
+        equippedSkillsIndex[7, 1] = 0;
+        equippedSkillsIndex[8, 0] = skillsIndex[SkillAssigner.SkillNames.KNIFETHROW].buttonNumber * 3;
+        equippedSkillsIndex[8, 1] = 0;
+        equippedSkillsIndex[9, 0] = skillsIndex[SkillAssigner.SkillNames.REALLOCATE].buttonNumber * 3;
+        equippedSkillsIndex[9, 1] = 0;
+        equippedSkillsIndex[10, 0] = skillsIndex[SkillAssigner.SkillNames.AGILITY].buttonNumber * 3;
+        equippedSkillsIndex[10, 1] = 0;
+        equippedSkillsIndex[11, 0] = skillsIndex[SkillAssigner.SkillNames.FIREBALL].buttonNumber * 3;
+        equippedSkillsIndex[11, 1] = 0;
+        equippedSkillsIndex[12, 0] = skillsIndex[SkillAssigner.SkillNames.FIREBALL].buttonNumber * 3;
+        equippedSkillsIndex[12, 1] = 0;
+        equippedSkillsIndex[13, 0] = skillsIndex[SkillAssigner.SkillNames.FIREBALL].buttonNumber * 3;
+        equippedSkillsIndex[13, 1] = 0;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
+        switch (gameState)
+        {
+            case -2:    //Standby, level
+                break;
+            case -1:    // Standby, menus
+                if (ui.IsReady())
+                {
+                    ui.Disable(true);
+                    gameState = 1;
+
+                    UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+                }
+                break;
+            case 0: // Options screen
+                GameObject UIProfileObject = new GameObject();
+                ui = UIProfileObject.AddComponent<UIProfile>();
+
+                ui.Init(null, ref skillsList, ref equippedSkillsIndex, ref charStats);
+                gameState = -1;
+                break;
+            case 1: // Game
+                GameObject levelHandlerObject = new GameObject();
+                levelHandler = levelHandlerObject.AddComponent<LevelGenerator>();
+
+                SkillProperties[] equippedSkills = new SkillProperties[equippedSkillsIndex.Length / 2];
+
+                for (int i = 0; i < equippedSkills.Length; i++)
+                {
+                    // Block skill
+                    if (i % 7 < 4)
+                    {
+                        // TEMPORARY, change section
+                        equippedSkills[i] = skillsList[i % 7][(2 * i / equippedSkills.Length) * skillsList[i % 7].Length / 2 + equippedSkillsIndex[i, 0] / 3];
+                        equippedSkills[i].variant = equippedSkillsIndex[i, 1];
+                    }
+                    else // Active skill. TEMPORARY
+                    {
+                        equippedSkills[i] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
+                        equippedSkills[i].variant = equippedSkillsIndex[i, 1];
+                    }
+                }
+
+                levelHandler.LoadPlayers(equippedSkills, charStats);
+                LevelGenerator.EnemyNames[] loadEnemies = { LevelGenerator.EnemyNames.GOBLIN, LevelGenerator.EnemyNames.GARGOYLE };
+                levelHandler.SetEnemies(loadEnemies);
+                GameObject testBoss = new GameObject();
+                levelHandler.SetBoss(testBoss.AddComponent<BossSpawn>());
+                levelHandler.Init();
+                gameState = -2;
+                break;
+            default:
+                break;
+        }
     }
 }

@@ -43,14 +43,19 @@ public class Block : MonoBehaviour {
         }
 	}
 
+    // REPLACE WITH FLYWEIGHT?
     public void SetBlockType(int setType)
     {
+        blockType = setType;
+        /*
         if ((setType < 3) && (setType >= 0))
         {
             blockType = setType;
-            Sprite[] subSprite = Resources.LoadAll<Sprite>("BlockColours");
-            gameObject.GetComponent<SpriteRenderer>().sprite = subSprite[blockType];
-        }
+     //     Sprite[] subSprite = Resources.LoadAll<Sprite>("BlockColours");
+     //     gameObject.GetComponent<SpriteRenderer>().sprite = subSprite[blockType];
+
+            gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load(newSprite, typeof(Sprite)) as Sprite;
+        }*/
     }
 
     public int GetBlockType()

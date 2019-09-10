@@ -8,6 +8,8 @@ public class UIProfile : MenuHandler
 {
 
     int characterSelect = 0; // Bool works, but may want to add more char. 0 = Frea, 1 = Luna
+    readonly int numChar = 2;
+    bool play = false;
 
     // Canvas
     Canvas canvas;  // Canvas on which the UI skills will be placed
@@ -26,6 +28,7 @@ public class UIProfile : MenuHandler
     Image[] profileOptionsImage;
     int selectedButton = 0;
     MenuButton switchCharButton;
+    MenuButton playButton;
 
     // Default sprite
     Sprite defaultSprite;
@@ -50,7 +53,7 @@ public class UIProfile : MenuHandler
         return;
     }
 
-    public void Init(MenuHandler parent, Dictionary<int, SkillProperties[]> loadSkills, SkillProperties[] equippedSkills, Stats[] charStats)
+    public void Init(MenuHandler parent, ref Dictionary<int, SkillProperties[]> loadSkills, ref int[,] equippedSkills, ref Stats[] charStats)
     {
         // Initialize the defaults
         defaultSprite = Resources.Load("ButtonTabs", typeof(Sprite)) as Sprite;
@@ -126,7 +129,7 @@ public class UIProfile : MenuHandler
         skillTreeObject.transform.SetParent(canvas.transform);
         skillTreeMenu = skillTreeObject.AddComponent<UISkillTreeMenu>();
 
-        skillTreeMenu.Init(this, loadSkills, equippedSkills);
+        skillTreeMenu.Init(this, ref loadSkills, ref equippedSkills);
         skillTreeMenu.SetStartPoint(new Vector2(descriptionBox.transform.position.x - (descriptionBoxWidth / 2), descriptionBox.transform.position.y + descriptionBoxHeight * 5 / 12), 30f);
         skillTreeMenu.ChangeMenu(characterSelect);
         skillTreeMenu.Disable(true);
@@ -156,6 +159,18 @@ public class UIProfile : MenuHandler
         switchCharButton.gameObject.transform.SetParent(canvas.transform);
         switchCharButton.gameObject.transform.position = descriptionBox.transform.position + Vector3.down * 80f + Vector3.left * 250f;
 
+        GameObject playButtonObject = new GameObject();
+        playButtonObject.AddComponent<Button>();
+        playButton = playButtonObject.AddComponent<MenuButton>();
+        playButton.Init(-111, this);
+        playButton.SetTextProperties("Ready!", font, 10, TextAnchor.MiddleCenter);
+        playButtonObject.AddComponent<Image>().sprite = Resources.Load("ButtonTabs", typeof(Sprite)) as Sprite;
+        playButtonObject.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(playButtonObject.GetComponent<Image>().sprite.rect.width, playButtonObject.GetComponent<Image>().sprite.rect.height / 1.5f);
+        playButton.SetTextboxSize(switchCharButtonObject.GetComponent<Image>().rectTransform.sizeDelta);
+
+        playButtonObject.transform.SetParent(canvas.transform);
+        playButtonObject.transform.position = descriptionBox.transform.position + Vector3.left * 250f;
+
         // Create the event system so that the UI can detect if the mouse is hovering over it
         GameObject eventSys = new GameObject();
         eventSystem = eventSys.AddComponent<EventSystem>();
@@ -165,9 +180,11 @@ public class UIProfile : MenuHandler
 
     public override void ChangeMenu(int newButton)
     {
-        if(newButton == -99)    // Switch Char
+        if(newButton == -111)
+            play = true;
+        else if(newButton == -99)    // Switch Char
         {
-            characterSelect = (characterSelect + 1) % 2;
+            characterSelect = (characterSelect + 1) % numChar;
             submenus[selectedButton].SwitchChar(characterSelect);
             profileImageObject.GetComponent<Image>().sprite = storedProfileImage[characterSelect];
         }
@@ -199,6 +216,15 @@ public class UIProfile : MenuHandler
 
     public override void Disable(bool enable)
     {
+       // skillTreeMenu.ReturnEquippedSkills();
+
+        submenus[selectedButton].Disable(true);
+        play = false;
         return;
+    }
+
+    public bool IsReady()
+    {
+        return play;
     }
 }
