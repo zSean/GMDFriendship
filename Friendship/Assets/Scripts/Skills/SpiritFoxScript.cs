@@ -12,8 +12,8 @@ public class SpiritFoxScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         gameObject.AddComponent<PlayerMovement>();
-        gameObject.layer = 2;
-        Physics2D.IgnoreLayerCollision(2, 0, true);
+        gameObject.layer = 9;
+        Physics2D.IgnoreLayerCollision(9, 0, true);
         Activate(false);
 	}
 

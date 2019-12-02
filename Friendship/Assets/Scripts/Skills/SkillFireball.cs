@@ -2,25 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkillFireball : ActiveSkills {
+public class SkillFireball : Skills {
 
     GameObject fireball;
     GameObject fireballClone;
 
     void Awake()
     {
-        activeSkill = true; //This is an active skill
-        maxSkillCooldown = 1f;
+        animationTime = 1f;
         fireball = (GameObject)Resources.Load("Fireball");
         power = 1f;
     }
 
     public override void Activate()
     {
-        if (skillCooldown <= 0)
+        if (cooldownTimer <= 0)
         {
             //Initiate cooldown
-            skillCooldown = maxSkillCooldown;
+            cooldownTimer = animationTime;
 
             //Create fireball
             fireballClone = Instantiate(fireball, transform.position, transform.rotation);
@@ -40,7 +39,7 @@ public class SkillFireball : ActiveSkills {
 	
 	// Update is called once per frame
 	void Update () {
-        skillCooldown -= Time.deltaTime;
+        cooldownTimer -= Time.deltaTime;
     }
 
     public override void DestroySkill()

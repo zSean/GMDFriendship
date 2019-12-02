@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Mod
+
+
+
 public struct SkillProperties
 {
     public SkillAssigner.SkillNames name;
@@ -25,6 +27,36 @@ public struct SkillProperties
     }
 }
 
+// Specifically for UIStatMenu
+public struct StatProperties
+{
+    public string[] specialStatNames;
+    public Stats stats;
+    public int[] maxUpgradeLevel;
+    public int[] currentUpgradeLevel;
+
+    public StatProperties(string[] specialStatNames, Stats stats, int[] maxUpgradeLevel, int[] currentUpgradeLevel)
+    {
+        this.specialStatNames = specialStatNames;
+        this.stats = stats;
+
+        if (maxUpgradeLevel.Length <= 7)
+            this.maxUpgradeLevel = maxUpgradeLevel;
+        else
+        {
+            this.maxUpgradeLevel = new int[7] { 0, 0, 0, 0, 0, 0, 0 };
+            Debug.Log("MaxUpgrade over 7 stats");
+        }
+        if(currentUpgradeLevel.Length <= 7)
+            this.currentUpgradeLevel = currentUpgradeLevel;
+        else
+        {
+            this.currentUpgradeLevel = new int[7] { 0, 0, 0, 0, 0, 0, 0 };
+            Debug.Log("CurrentUpgrade over 7 stats");
+        }
+    }
+}
+
 // Handles general flow of game, contains important stats
 public class GameHandler : MonoBehaviour
 {
@@ -33,6 +65,8 @@ public class GameHandler : MonoBehaviour
 
     // Character stats
     Stats[] charStats; // Record of chracters' stats. Does not include special stats
+    StatProperties[] upgradeStats; // Record of upgrade stats for UIStatMenu.cs
+    readonly int numCharacters = 2; //5
 
     Dictionary<int, SkillProperties[]> skillsList = new Dictionary<int, SkillProperties[]>();   // key int = group (aerial, flurry, buff etc), value SkillProperties = skills
     Dictionary<SkillAssigner.SkillNames, SkillProperties> skillsIndex = new Dictionary<SkillAssigner.SkillNames, SkillProperties>();    // For assigning equipped skills
@@ -162,17 +196,41 @@ public class GameHandler : MonoBehaviour
         return skillsList;
     }
 
+    private void BuildCharacterStats()
+    {
+        // Frea
+        string[] specialStatNames = new string[2] { "Burn Chance", "Poison Chance"};
+        int[] maxUpgradeLevel = new int[7] { 4, 5, 0, 2, 4, 3, 2};
+        int[] currentUpgradeLevel = new int[7] { 2, 8, 0, 3, 0, 0, 0};
+        upgradeStats[0] = new StatProperties(specialStatNames, charStats[0], maxUpgradeLevel, currentUpgradeLevel);
+
+        // Luna
+        specialStatNames = new string[2] { "Attack Speed", "Crit dmg" };
+        maxUpgradeLevel = new int[7] { 5, 5, 2, 3, 0, 1, 4};
+        currentUpgradeLevel = new int[7] { 3, 3, 0, 1, 0, 0, 1 };
+        upgradeStats[1] = new StatProperties(specialStatNames, charStats[1], maxUpgradeLevel, currentUpgradeLevel);
+
+        // Anenome
+
+        // Cattie
+
+        // Fi
+    }
+
     // Use this for initialization
     void Start()
     {
         DontDestroyOnLoad(this);
+
         // Init character stats here
-        charStats = new Stats[2];
-        for (int i = 0; i < 2; i++)
+        charStats = new Stats[numCharacters];
+        upgradeStats = new StatProperties[numCharacters];
+        for (int i = 0; i < numCharacters; i++)
         {
             float[] defaultStats = { 5, 1000, 0, 0, 0, 1, 1 };//float[] defaultStats = { 1, 1, 0, 0, 0, 1, 1 };
             charStats[i].maxCharStats = defaultStats;
         }
+        BuildCharacterStats();
 
         skillsList = GenerateSkillGroupDictionary();
         
@@ -188,7 +246,6 @@ public class GameHandler : MonoBehaviour
         equippedSkillsIndex[2, 1] = 0;
         equippedSkillsIndex[3, 0] = skillsIndex[SkillAssigner.SkillNames.ACTIVEHEALING].buttonNumber * 3;
         equippedSkillsIndex[3, 1] = 0;
-        // Needs testing
         equippedSkillsIndex[4, 0] = skillsIndex[SkillAssigner.SkillNames.FIREBALL].buttonNumber * 3;
         equippedSkillsIndex[4, 1] = 0;
         equippedSkillsIndex[5, 0] = skillsIndex[SkillAssigner.SkillNames.FIREBALL].buttonNumber * 3;
@@ -231,7 +288,7 @@ public class GameHandler : MonoBehaviour
                 GameObject UIProfileObject = new GameObject();
                 ui = UIProfileObject.AddComponent<UIProfile>();
 
-                ui.Init(null, ref skillsList, ref equippedSkillsIndex, ref charStats);
+                ui.Init(null, ref skillsList, ref equippedSkillsIndex, ref upgradeStats);
                 gameState = -1;
                 break;
             case 1: // Game
@@ -242,18 +299,13 @@ public class GameHandler : MonoBehaviour
 
                 for (int i = 0; i < equippedSkills.Length; i++)
                 {
-                    // Block skill
                     if (i % 7 < 4)
                     {
-                        // TEMPORARY, change section
-                        equippedSkills[i] = skillsList[i % 7][(2 * i / equippedSkills.Length) * skillsList[i % 7].Length / 2 + equippedSkillsIndex[i, 0] / 3];
+                        equippedSkills[i] = skillsList[i % 7][(numCharacters * i / equippedSkills.Length) * skillsList[i % 7].Length / numCharacters + equippedSkillsIndex[i, 0] / 3];
                         equippedSkills[i].variant = equippedSkillsIndex[i, 1];
                     }
-                    else // Active skill. TEMPORARY
-                    {
-                        equippedSkills[i] = skillsIndex[SkillAssigner.SkillNames.FIREBALL];
-                        equippedSkills[i].variant = equippedSkillsIndex[i, 1];
-                    }
+                    else
+                        equippedSkills[i] = skillsList[4][(numCharacters * i / equippedSkills.Length) * skillsList[4].Length / numCharacters + equippedSkillsIndex[i, 0] / 3];
                 }
 
                 levelHandler.LoadPlayers(equippedSkills, charStats);

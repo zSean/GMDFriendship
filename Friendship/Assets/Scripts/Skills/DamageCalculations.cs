@@ -25,6 +25,7 @@ public static class DamageCalculations
                         target.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.dodge, sender, ref power);
                         if(sender.GetComponent<BuffHandler>() != null)
                             sender.GetComponent<BuffHandler>().ActivateBuff((int)CharacterStates.dodged, target, ref power);
+                        DamageTextCreator.tCreator.CreateText(target.gameObject.transform.position, "MISS!");
                         return;
                     }
                 }

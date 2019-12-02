@@ -18,11 +18,11 @@ public class LevelGenerator : MonoBehaviour {
     int selectedPlayer = 1;
 
     // Level
-    float maxSwapCooldown = 10f;    // 10 second cooldown before swapping
+    float maxSwapCooldown = 5f;    // 10 second cooldown before swapping
     float swapCooldown = 0f;
-    int maxMana = 100;
+    readonly int maxMana = 100;
     int mana = 0;
-    float maxManaRegenTimer = 0.3f;
+    readonly float maxManaRegenTimer = 0.3f;
     float manaRegenTimer = 0f;
     BlockGenerator blockGenerator;  // Need to communicate w block generator when switching char
     LevelHUD levelHUD;  // Same as above
@@ -103,17 +103,12 @@ public class LevelGenerator : MonoBehaviour {
             }
 
             // Equip block skills
-            for(int j = i * playerSkills.Length / player.Length; j < playerSkills.Length / (player.Length - i); j++)
+            int temp = playerSkills.Length;
+
+            for(int j = i * temp / player.Length; j < playerSkills.Length / (player.Length - i); j++)
             {
-                if (j % 7 < 4)
-                {
-                    player[i].EquipBlockSkill(j % 7, SkillAssigner.AssignSkill(playerObjectClone, playerSkills[j].name, playerSkills[j].level[playerSkills[j].variant], playerSkills[j].variant));
-                    skills[player[i].GetBlockSkill(j % 7)] = playerSkills[j];
-                }
-                else
-                {
-                    player[i].EquipActiveSkill(j % 7 - 4, SkillAssigner.AssignActiveSkill(playerObjectClone, playerSkills[j].name, playerSkills[j].level[playerSkills[j].variant], playerSkills[j].variant));
-                }
+                player[i].EquipBlockSkill(j % 7, SkillAssigner.AssignSkill(playerObjectClone, playerSkills[j].name, playerSkills[j].level[playerSkills[j].variant], playerSkills[j].variant));
+                skills[player[i].GetBlockSkill(j % 7)] = playerSkills[j];
             }
         }
 
@@ -155,7 +150,8 @@ public class LevelGenerator : MonoBehaviour {
     }
 
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
         // sMoveSpeed is negative, so add a negative value. Once levelDistance <= 0, will either move to boss or end game
         levelDistance += StandardLevel.sMoveSpeed.x * StandardLevel.speedModifier * Time.deltaTime;
 
@@ -244,9 +240,7 @@ public class LevelGenerator : MonoBehaviour {
             swapCooldown = maxSwapCooldown;
             player[selectedPlayer].SetPlayerState(1);
 
-            // Move the other player off screen (w/o animation)
             player[select].gameObject.transform.position = player[selectedPlayer].gameObject.transform.position;
-            player[selectedPlayer].gameObject.transform.position = Camera.main.transform.position + Vector3.left * Camera.main.orthographicSize * 4;
 
             player[select].SetPlayerState(3);
 
@@ -254,7 +248,7 @@ public class LevelGenerator : MonoBehaviour {
             {
                 ptr = player[selectedPlayer].GetBlockSkill(i);
                 blockGenerator.SetBlockSkill(i, ptr, skills[ptr].skillImagePath);
-                blockGenerator.UpdateBlockSprites();    //actual pointer to sprite would be nice
+                blockGenerator.UpdateBlockSprites();
             }
 
             selectedPlayer = select;

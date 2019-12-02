@@ -11,11 +11,11 @@ public class PlayableChar : CharacterStats {
     int playerIndex = -1;
     float maxAutoAttackTimer = 10f;
     float autoAttackTimer;
+    float animTimer = 3;
+    readonly float deactivateDistance = 5000f;
 
-    // Aerial, Flurry, Buff, Perk
-    Skills[] skillEquip = new Skills[4];
-    // 1 auto, 2 actives
-    ActiveSkills[] activeSkillEquip = new ActiveSkills[3];
+    // Aerial, Flurry, Buff, Perk, 3 active skills (1 auto, 2 active)
+    Skills[] skillEquip = new Skills[7];
     LevelGenerator level;
 
     protected override void Awake()
@@ -32,9 +32,11 @@ public class PlayableChar : CharacterStats {
         }
 
         buffHandler = gameObject.AddComponent<BuffHandler>();
-        control = gameObject.AddComponent<PlayerMovement>();
+        control = gameObject.GetComponent<PlayerMovement>();
 
         autoAttackTimer = maxAutoAttackTimer;
+
+        Physics2D.IgnoreLayerCollision(9, 0, true);
     }
 
     private void Update()
@@ -45,44 +47,60 @@ public class PlayableChar : CharacterStats {
         {
             case 0: // Active state
                 if (Input.GetKeyDown(KeyCode.LeftControl))
-                    activeSkillEquip[0].Activate();
+                    skillEquip[4].Activate();
                 else if (Input.GetKeyDown(KeyCode.Space))
-                    activeSkillEquip[1].Activate();
+                    skillEquip[5].Activate();
                 else if (Input.GetKeyDown(KeyCode.LeftShift))
-                    activeSkillEquip[2].Activate();
+                    skillEquip[6].Activate();
                 break;
             case 1: // Getting ready to swap out (deactivation state)
-                control.enabled = false;
+                autoAttackTimer = maxAutoAttackTimer;
+                gameObject.transform.position += Vector3.left * deactivateDistance;
                 gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
-                gameObject.GetComponent<CircleCollider2D>().enabled = false;
+                // Temp move into diff layer to prevent colliding with enemy
+                gameObject.layer = 9;
+                CharEnable(false);
                 playerState = 2;
                 break;
             case 2: // Standby. Attack when autoAttack timer < 0
                 autoAttackTimer -= Time.deltaTime;
                 if (autoAttackTimer < 0)
+                {
+                    gameObject.transform.position -= Vector3.left * deactivateDistance;
+                    gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                    animTimer = 3f; // TEMP
+                    skillEquip[6].Activate();
                     playerState = 4;
+                }
                 break;
             case 3: // Getting ready to swap back in (init state)
                 gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
-                gameObject.GetComponent<CircleCollider2D>().enabled = true;
-                control.enabled = true;
+                CharEnable(true);
                 control.ResetJumps();
+                gameObject.layer = 0;
                 playerState = 0;
                 break;
-            case 4: // Attack in the background
-                autoAttackTimer = maxAutoAttackTimer;
-                playerState = 2;
-                print("Attack Launched!!!");
+            case 4: // Auto-attack animation
+                // If swapped while auto-attacking, play a new swap animation??
+                animTimer -= Time.deltaTime;
+                if (animTimer <= 0)
+                    playerState = 1;
                 break;
             case 5: // Dead
-                control.enabled = false;
                 gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
-                gameObject.GetComponent<CircleCollider2D>().enabled = false;
-                playerState = 6;    // Move to stateless
+                CharEnable(false);
+                playerState = -1;    // Move to stateless
                 break;
             default:
                 break;
         }
+    }
+
+    void CharEnable(bool enable)
+    {
+        gameObject.GetComponent<CircleCollider2D>().enabled = enable;
+        gameObject.GetComponent<SpriteRenderer>().enabled = enable;
+        control.enabled = enable;
     }
 
     public float GetMaxAutoAttackTimer()
@@ -99,9 +117,10 @@ public class PlayableChar : CharacterStats {
         autoAttackTimer = timer;
     }
 
-    public void SetPlayerState(int state)
+    public void SetPlayerState(int state, int setLayer=0)
     {
         playerState = state;
+        gameObject.layer = setLayer;
     }
     public int GetPlayerState()
     {
@@ -110,14 +129,6 @@ public class PlayableChar : CharacterStats {
     public PlayerMovement GetControl()
     {
         return control;
-    }
-
-    public void EquipActiveSkill(int skillIndex, ActiveSkills skill)
-    {
-        if(activeSkillEquip[skillIndex] != null)
-            activeSkillEquip[skillIndex].DestroySkill();
-        activeSkillEquip[skillIndex] = skill;
-        activeSkillEquip[skillIndex].SetParent(gameObject);
     }
 
     public void EquipBlockSkill(int skillIndex, Skills skill)

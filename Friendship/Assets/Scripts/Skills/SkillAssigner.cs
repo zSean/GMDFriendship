@@ -11,7 +11,6 @@ public static class SkillAssigner{
     };
 
     private static Skills newSkill;
-    private static ActiveSkills newActiveSkill;
 
     public static Skills AssignSkill(GameObject parent, SkillNames skill, int skillLevel, int variant)
     {
@@ -93,6 +92,12 @@ public static class SkillAssigner{
             case SkillNames.WINGBOMB:
                 newSkill = parent.AddComponent<SkillWingBomb>();
                 break;
+            case SkillNames.FIREBALL:
+                newSkill = parent.AddComponent<SkillFireball>();
+                break;
+            case SkillNames.TELEPORT:
+                newSkill = parent.AddComponent<SkillTeleport>();
+                break;
             default:
                 newSkill = null;
                 break;
@@ -101,26 +106,5 @@ public static class SkillAssigner{
         newSkill?.Init(variant, skillLevel);
 
         return newSkill;
-    }
-
-    public static ActiveSkills AssignActiveSkill(GameObject parent, SkillNames skill, int level, int variant)
-    {
-        newActiveSkill = null;
-        switch (skill)
-        {
-            case SkillNames.FIREBALL:
-                newActiveSkill = parent.AddComponent<SkillFireball>();
-                break;
-            case SkillNames.TELEPORT:
-                newActiveSkill = parent.AddComponent<SkillTeleport>();
-                break;
-            default:
-                newActiveSkill = null;
-                break;
-        }
-
-        newActiveSkill?.Init(variant, level);
-
-        return newActiveSkill;
     }
 }

@@ -96,11 +96,11 @@ public class CharacterStats : MonoBehaviour {
         {
             if (damage >= 0)
             {
-                print(damage + " damage!");
+                DamageTextCreator.tCreator.CreateText(gameObject.transform.position, damage.ToString());
                 invincibilityTimer = maxInvincibilityTimer;
             }
-            else
-                print("Heal " + -damage + "!");
+            else// Heal
+                DamageTextCreator.tCreator.CreateText(gameObject.transform.position, damage.ToString());
 
             currentCharStats[1] -= damage;
             if (currentCharStats[1] > GetMaxStat(1))

@@ -10,10 +10,35 @@ public abstract class Skills : MonoBehaviour
     protected int level;
     protected int variation = 0; // 0 being the base, 1 and 2 are the variants
     protected float power;  //Power of the skill, whether it's dmg or healing (1.00 = 100%)
-    protected int manaCost = 0; // Mana cost at 2c. For 1c, the cost may be doubled, 3c has no mana cost
+    protected int manaCost = 0; // Mana cost at 2c. For 1c, the cost may be doubled, 3c and most active skills have no mana cost
     public Sprite skillImage;
-    protected int animationTime = 0;    // If animation time is required before next attack can proceed
+    protected float cooldownTimer = 0f;
+    protected float animationTime = 0f;    // If animation time is required before next attack can proceed, same as cooldown
 
+    public float GetSkillCooldown()
+    {
+        //Returns the current skill if on cooldown
+        return cooldownTimer;
+    }
+    public float GetMaxSkillCooldown()
+    {
+        //Returns the maximum cooldown of the skill
+        return animationTime;
+    }
+    public void SetMaxSkillCooldown(float cooldown)
+    {
+        //Sets the maximum cooldown of the skill to a new cooldown
+        animationTime = cooldown;
+
+        //If the current skill cooldown is > max, will be brought down to max
+        if (cooldownTimer > animationTime)
+            cooldownTimer = animationTime;
+    }
+    public void AdjustCooldown(float adjustedAmount)
+    {
+        //Increments the current skill cooldown by the adjusted amount
+        cooldownTimer += adjustedAmount;
+    }
     public int GetVariant()
     {
         return variation;

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkillTeleport : ActiveSkills {
+public class SkillTeleport : Skills {
 
     public override void Activate()
     {
-        if(skillCooldown <= 0)
+        if(cooldownTimer <= 0)
         {
-            skillCooldown = maxSkillCooldown;
+            cooldownTimer = animationTime;
 
             // General movement horizontally and vertically, can jump multiple times depending on maxJumps
             gameObject.transform.position += Input.GetAxisRaw("Horizontal") * Vector3.right * power;
@@ -28,13 +28,13 @@ public class SkillTeleport : ActiveSkills {
 
     // Use this for initialization
     void Start () {
-        maxSkillCooldown = 4f;
-        skillCooldown = maxSkillCooldown;
+        animationTime = 4f;
+        cooldownTimer = animationTime;
         power = 5f;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        skillCooldown -= Time.deltaTime;
+       cooldownTimer -= Time.deltaTime;
 	}
 }

@@ -53,7 +53,7 @@ public class UIProfile : MenuHandler
         return;
     }
 
-    public void Init(MenuHandler parent, ref Dictionary<int, SkillProperties[]> loadSkills, ref int[,] equippedSkills, ref Stats[] charStats)
+    public void Init(MenuHandler parent, ref Dictionary<int, SkillProperties[]> loadSkills, ref int[,] equippedSkills, ref StatProperties[] charStats)
     {
         // Initialize the defaults
         defaultSprite = Resources.Load("ButtonTabs", typeof(Sprite)) as Sprite;
@@ -118,7 +118,7 @@ public class UIProfile : MenuHandler
         statMenuObject.transform.SetParent(canvas.transform);
         statMenu = statMenuObject.AddComponent<UIStatMenu>();
         statMenu.Init(this, charStats);
-        statMenu.SetStartPoint(new Vector2(descriptionBox.transform.position.x - (descriptionBoxWidth / 3), descriptionBox.transform.position.y + descriptionBoxHeight * 5 / 12), 30f);
+        statMenu.SetStartPoint(new Vector2(descriptionBox.transform.position.x - (descriptionBoxWidth / 3), descriptionBox.transform.position.y + descriptionBoxHeight * 5 / 12), 40f);
         statMenu.ChangeMenu(characterSelect);
         statMenu.Disable(true);
         submenus[1] = statMenu;

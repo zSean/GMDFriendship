@@ -26,6 +26,7 @@ public class UISkillTreeMenu : MenuHandler {
 
     // Switching between characters
     int switchChar = 0;
+    readonly int totalChar = 2; //5;
 
     // Small Description box
     MenuButton descriptions;
@@ -127,7 +128,7 @@ public class UISkillTreeMenu : MenuHandler {
     public void Init(MenuHandler parent, ref Dictionary<int, SkillProperties[]> loadedStats, ref int[,] equippedSkills /*ref SkillProperties[] equippedSkills*/)
     {
         skills = loadedStats;
-        selectedButtons = new int[equippedSkills.Length / 2];
+        selectedButtons = new int[equippedSkills.Length / totalChar];
 
         for(int i = 0; i < selectedButtons.Length; i++)
         {
@@ -164,8 +165,8 @@ public class UISkillTreeMenu : MenuHandler {
             {
                 skillButtons[i].enabled = true;
                 skillButtons[i].GetComponent<Image>().enabled = true;
-                skillButtons[i].GetComponent<Image>().sprite = skillImage[3][i / 3 + switchChar * skills[tracker].Length / 2][0];
-                skillButtons[i].SetText(SkillDescriptions.ReturnDescription(skillSet[i / 3 + skillSet.Length / 2 * switchChar]));
+                skillButtons[i].GetComponent<Image>().sprite = skillImage[3][i / 3 + switchChar * skills[tracker].Length / totalChar][0];
+                skillButtons[i].SetText(SkillDescriptions.ReturnDescription(skillSet[i / 3 + skillSet.Length / totalChar * switchChar]));
             }
             else
             {
@@ -184,10 +185,10 @@ public class UISkillTreeMenu : MenuHandler {
             skillButtons[i].GetComponent<Image>().enabled = true;
             // Switch skillButton image
             if (skills[tracker][i / 3 + switchChar * skills[tracker].Length / 2].level[i % 3] > 0)
-                skillButtons[i].GetComponent<Image>().sprite = skillImage[tracker][i / 3 + skillSet.Length / 2 * switchChar][i % 3];
+                skillButtons[i].GetComponent<Image>().sprite = skillImage[tracker][i / 3 + skillSet.Length / totalChar * switchChar][i % 3];
             else
                 skillButtons[i].GetComponent<Image>().sprite = lockedSkill;
-            skillButtons[i].SetText(SkillDescriptions.ReturnDescription(skillSet[i / 3 + skillSet.Length / 2 * switchChar], i % 3));
+            skillButtons[i].SetText(SkillDescriptions.ReturnDescription(skillSet[i / 3 + skillSet.Length / totalChar * switchChar], i % 3));
         }
         return;
     }
@@ -202,7 +203,7 @@ public class UISkillTreeMenu : MenuHandler {
             skillButtons[selectedButtons[tracker]].SelectButton(true);
             descriptions.SetText(skillButtons[selectedButtons[tracker]].GetText());
 
-            if (skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / 2].level[selectedButtons[tracker] % 3] <= 0)
+            if (skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / totalChar].level[selectedButtons[tracker] % 3] <= 0)
             {
                 equipButton.gameObject.GetComponent<Button>().enabled = false;
                 equipButton.gameObject.GetComponent<Image>().enabled = false;
@@ -215,7 +216,7 @@ public class UISkillTreeMenu : MenuHandler {
                 equipButton.enabled = true;
             }
 
-            if ((tracker != 3) && ((newButton - 99) % 3 == 0) && (skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / 2].level[selectedButtons[tracker] % 3] < 5))
+            if ((tracker != 3) && ((newButton - 99) % 3 == 0) && (skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / totalChar].level[selectedButtons[tracker] % 3] < 5))
             {
                 upgradeButton.enabled = true;
                 upgradeButton.gameObject.GetComponent<Button>().enabled = true;
@@ -238,26 +239,26 @@ public class UISkillTreeMenu : MenuHandler {
         else if (newButton == numSkillTypes + 2)    // If the upgrade button was clicked on
         {
             // Max stat cap at level 5. Upgrading 1 skill upgrades ALL OF THAT SKILL'S VARIANTS. ASSUME: Only the base skill [0] can be upgraded
-            if (skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / 2].level[0] < 5)
+            if (skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / totalChar].level[0] < 5)
             {
-                skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / 2].level[0]++;
-                skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / 2].level[1]++;
-                skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / 2].level[2]++;
+                skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / totalChar].level[0]++;
+                skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / totalChar].level[1]++;
+                skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / totalChar].level[2]++;
 
-                if (skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / 2].level[0] >= 5)
+                if (skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / totalChar].level[0] >= 5)
                 {
                     skillButtons[selectedButtons[tracker] + 1].SetText(SkillDescriptions.ReturnDescription(skills[tracker][switchChar * skills[tracker].Length / 2 + selectedButtons[tracker] / 3], 1));
                     skillButtons[selectedButtons[tracker] + 2].SetText(SkillDescriptions.ReturnDescription(skills[tracker][switchChar * skills[tracker].Length / 2 + selectedButtons[tracker] / 3], 2));
 
-                    skillButtons[selectedButtons[tracker] + 1].GetComponent<Image>().sprite = skillImage[tracker][switchChar * skills[tracker].Length / 2 + selectedButtons[tracker] / 3][1];
-                    skillButtons[selectedButtons[tracker] + 2].GetComponent<Image>().sprite = skillImage[tracker][switchChar * skills[tracker].Length / 2 + selectedButtons[tracker] / 3][2];
+                    skillButtons[selectedButtons[tracker] + 1].GetComponent<Image>().sprite = skillImage[tracker][switchChar * skills[tracker].Length / totalChar + selectedButtons[tracker] / 3][1];
+                    skillButtons[selectedButtons[tracker] + 2].GetComponent<Image>().sprite = skillImage[tracker][switchChar * skills[tracker].Length / totalChar + selectedButtons[tracker] / 3][2];
 
                     upgradeButton.enabled = false;
                     upgradeButton.gameObject.GetComponent<Button>().enabled = false;
                     upgradeButton.gameObject.GetComponent<Image>().enabled = false;
                 }
             }
-            skillButtons[selectedButtons[tracker]].SetText(SkillDescriptions.ReturnDescription(skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / 2]));
+            skillButtons[selectedButtons[tracker]].SetText(SkillDescriptions.ReturnDescription(skills[tracker][selectedButtons[tracker] / 3 + switchChar * skills[tracker].Length / totalChar]));
             descriptions.SetText(skillButtons[selectedButtons[tracker]].GetText());
         }
         else    // Otherwise it would have been a tab
